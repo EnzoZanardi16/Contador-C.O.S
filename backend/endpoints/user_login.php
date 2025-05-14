@@ -16,16 +16,13 @@ if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 
 }
 $_SESSION['LAST_ACTIVITY'] = time();
 
-// JSON recebido
-$json = json_decode(file_get_contents("php://input"), true);
+$nome = $_POST['nome_user368'] ?? null;
+$senha = $_POST['senha_user368'] ?? null;
 
-if (!isset($json['nome_user368']) || !isset($json['senha_user368'])) {
+if (!$nome || !$senha) {
     echo json_encode(["status" => "erro", "mensagem" => "Campos obrigatórios ausentes"]);
     exit;
 }
-
-$nome = $json['nome_user368'];
-$senha = $json['senha_user368'];
 
 // Buscar usuário
 $sql = "SELECT id_user368, senha_user368 FROM users368 WHERE nome_user368 = :nome";
@@ -45,6 +42,8 @@ if ($result && password_verify($senha, $result["senha_user368"])) {
     // Gerar token com sha256
     $token = hash("sha256", $nome . $agora);
 
+    $_SESSION['token'] = $token;
+
     // Inserir na tabela de sessões
     $insert = $conn->prepare("INSERT INTO sessions (token, expira_em, status, users368_id_user368) VALUES (:token, :expira_em, '1', :user_id)");
     $insert->bindParam(":token", $token, PDO::PARAM_STR);
@@ -52,14 +51,8 @@ if ($result && password_verify($senha, $result["senha_user368"])) {
     $insert->bindParam(":user_id", $id_user, PDO::PARAM_INT);
     $insert->execute();
 
-    echo json_encode([
-        "status" => "success",
-        "mensagem" => "Login realizado com sucesso",
-        "usuario" => $nome,
-        "token" => $token,
-        "criado_em" => $agora,
-        "expira_em" => $expira_em
-    ]);
+    header("Location: ../../frontend/main.php");
+    exit;
 } else {
     echo json_encode(["status" => "erro", "mensagem" => "Usuário ou senha incorretos"]);
 }

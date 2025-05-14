@@ -115,25 +115,19 @@
     </div>
     <hr style="border: none; height: 70%;width: 4px;border-radius: 50px; background-color: #FF3636;">
     <div>
-        <form action="#">
+        <form action="../backend/endpoints/user_login.php" method="POST">
             <fieldset>
-                <legend>SS/SN</legend>
-                <input type="text">
+                <legend>Nome</legend>
+                <input type="text" name="nome_user368" id="nome_user368">
             </fieldset>
             <fieldset>
-                <legend>SENHA</legend>
-                <input type="password">
+                <legend>Senha</legend>
+                <input type="password" name="senha_user368" id="senha_user368">
             </fieldset>
-            <div style="display: flex; width: 100%; height: auto; flex-direction: row; gap: 10px; justify-content: start;">
-                <input type="checkbox">
-                <p style="font-size: 20px;">Lembrar minha senha</p>
-            </div>
-        <a href="main.php">
+
             <button style="cursor: pointer; font-size: 30px; border-radius: 10px; color: white; padding-inline: 45px; height: 60px; border: none; background-color: #FF3636;" type="submit">Entrar</button>
-        </a>
 
         </form>
     </div>
 </body>
-
 </html>
