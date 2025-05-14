@@ -1,0 +1,19 @@
+.navbar {
+    border-bottom: 1px solid #0D6EFD;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+span {
+    width: 120px;
+}
+
+.swal2-confirm {
+    background-color: #3085d6 !important;
+}
+
+.swal2-cancel {
+    background-color: #d33 !important;
+}
