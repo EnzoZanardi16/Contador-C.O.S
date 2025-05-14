@@ -235,6 +235,8 @@ $contagem3 = buscarContagem($conn, 5, $date);
             align-items: center;
             gap: 0.2em;
         }
+
+        
     </style>
 </head>
 
@@ -358,7 +360,62 @@ $contagem3 = buscarContagem($conn, 5, $date);
 
     <div id="fundamental1" class="content">
         <h1>Fundamental I</h1>
-        <p></p>
+        <p>
+           <div class="card">
+    <h3>1° ANO EF</h3>
+    <div class="line"></div>
+    <div class="counter">
+      <button onclick="changeCount(this, -1)">−</button>
+      <span>32</span>
+      <button onclick="changeCount(this, 1)">+</button>
+    </div>
+    <button class="confirm-button">Confirmar</button>
+  </div>
+
+  <div class="card">
+    <h3>2° ANO EF</h3>
+    <div class="line"></div>
+    <div class="counter">
+      <button onclick="changeCount(this, -1)">−</button>
+      <span>32</span>
+      <button onclick="changeCount(this, 1)">+</button>
+    </div>
+    <button class="confirm-button">Confirmar</button>
+  </div>
+
+  <div class="card">
+    <h3>3° ANO EF</h3>
+    <div class="line"></div>
+    <div class="counter">
+      <button onclick="changeCount(this, -1)">−</button>
+      <span>32</span>
+      <button onclick="changeCount(this, 1)">+</button>
+    </div>
+    <button class="confirm-button">Confirmar</button>
+  </div>
+
+  <div class="card">
+    <h3>4° ANO EF</h3>
+    <div class="line"></div>
+    <div class="counter">
+      <button onclick="changeCount(this, -1)">−</button>
+      <span>32</span>
+      <button onclick="changeCount(this, 1)">+</button>
+    </div>
+    <button class="confirm-button">Confirmar</button>
+  </div>
+
+  <div class="card">
+    <h3>5° ANO EF</h3>
+    <div class="line"></div>
+    <div class="counter">
+      <button onclick="changeCount(this, -1)">−</button>
+      <span>32</span>
+      <button onclick="changeCount(this, 1)">+</button>
+    </div>
+    <button class="confirm-button">Confirmar</button>
+  </div>
+        </p>
     </div>
     <div id="fundamental2" class="content">
         <h1>Fundamental II</h1>
