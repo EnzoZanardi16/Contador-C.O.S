@@ -235,8 +235,6 @@ $contagem3 = buscarContagem($conn, 5, $date);
             align-items: center;
             gap: 0.2em;
         }
-
-        
     </style>
 </head>
 
@@ -347,13 +345,13 @@ $contagem3 = buscarContagem($conn, 5, $date);
 
     <div id="usuario" class="content">
         <div class="card-user">
-            
+
         </div>
         <h1>
             <?php
-                $nome = $_SESSION['nome_user368'];
-                $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
-                echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
+            $nome = $_SESSION['nome_user368'];
+            $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
+            echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
             ?>
         </h1>
     </div>
@@ -361,60 +359,33 @@ $contagem3 = buscarContagem($conn, 5, $date);
     <div id="fundamental1" class="content">
         <h1>Fundamental I</h1>
         <p>
-           <div class="card">
-    <h3>1° ANO EF</h3>
-    <div class="line"></div>
-    <div class="counter">
-      <button onclick="changeCount(this, -1)">−</button>
-      <span>32</span>
-      <button onclick="changeCount(this, 1)">+</button>
-    </div>
-    <button class="confirm-button">Confirmar</button>
-  </div>
+        <div class="container">
+            <div class="row g-4 justify-content-center">
 
-  <div class="card">
-    <h3>2° ANO EF</h3>
-    <div class="line"></div>
-    <div class="counter">
-      <button onclick="changeCount(this, -1)">−</button>
-      <span>32</span>
-      <button onclick="changeCount(this, 1)">+</button>
-    </div>
-    <button class="confirm-button">Confirmar</button>
-  </div>
+                <!-- Cartões -->
+                <script>
+                    const anos = ["1°", "2°", "3°", "4°", "5°"];
+                    document.write(anos.map(ano => `
+          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
+            <div class="card text-center border-danger">
+              <div class="card-body">
+                <h5 class="card-title text-danger">${ano} ANO EF</h5>
+                <hr class="border-danger" />
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                  <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
+                  <span class="fs-4 fw-bold counter">32</span>
+                  <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
+                </div>
+                <button class="btn btn-outline-danger w-100">Confirmar</button>
+              </div>
+            </div>
+          </div>
+        `).join(''));
+                </script>
 
-  <div class="card">
-    <h3>3° ANO EF</h3>
-    <div class="line"></div>
-    <div class="counter">
-      <button onclick="changeCount(this, -1)">−</button>
-      <span>32</span>
-      <button onclick="changeCount(this, 1)">+</button>
-    </div>
-    <button class="confirm-button">Confirmar</button>
-  </div>
+            </div>
+        </div>
 
-  <div class="card">
-    <h3>4° ANO EF</h3>
-    <div class="line"></div>
-    <div class="counter">
-      <button onclick="changeCount(this, -1)">−</button>
-      <span>32</span>
-      <button onclick="changeCount(this, 1)">+</button>
-    </div>
-    <button class="confirm-button">Confirmar</button>
-  </div>
-
-  <div class="card">
-    <h3>5° ANO EF</h3>
-    <div class="line"></div>
-    <div class="counter">
-      <button onclick="changeCount(this, -1)">−</button>
-      <span>32</span>
-      <button onclick="changeCount(this, 1)">+</button>
-    </div>
-    <button class="confirm-button">Confirmar</button>
-  </div>
         </p>
     </div>
     <div id="fundamental2" class="content">
@@ -485,6 +456,16 @@ $contagem3 = buscarContagem($conn, 5, $date);
             showPage('home');
         });
     </script>
+    <script>
+        function changeCount(button, delta) {
+            const span = button.parentElement.querySelector('.counter');
+            let value = parseInt(span.textContent);
+            value = Math.max(0, value + delta);
+            span.textContent = value;
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
