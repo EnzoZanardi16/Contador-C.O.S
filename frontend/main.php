@@ -356,6 +356,10 @@ $contagem3 = buscarContagem($conn, 5, $date);
                 echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
             ?>
         </h1>
+                <form action="../backend/endpoints/user_logout.php" method="POST">
+            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']); ?>">
+            <button type="submit" class="btn btn-link p-0">Sair da Conta</button>
+        </form>
     </div>
 
     <div id="fundamental1" class="content">
@@ -405,10 +409,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
 
     <div id="configuracoes" class="content">
         <h1>Configurações</h1>
-        <form action="../backend/endpoints/user_logout.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']); ?>">
-            <button type="submit" class="btn btn-link p-0">Sair da Conta</button>
-        </form>
+
 
         <p>Configurações do sistema.</p>
     </div>
