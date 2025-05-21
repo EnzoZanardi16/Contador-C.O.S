@@ -30,11 +30,14 @@ $contagem3 = buscarContagem($conn, 5, $date);
 <html lang="pt-BR">
 
 <head>
+
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador de Alunos SESI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
             display: flex;
@@ -235,15 +238,111 @@ $contagem3 = buscarContagem($conn, 5, $date);
             align-items: center;
             gap: 0.2em;
         }
+        /* Estilos gerais para desktop já definidos no seu CSS */
+
+/* Mobile - telas até 768px */
+@media (max-width: 768px) {
+  
+ /* Botão hamburguer: padrão escondido */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1050; /* acima do conteúdo */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+/* Sidebar padrão desktop */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #343a40;
+  color: white;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  z-index: 1040;
+}
+
+/* Conteúdo principal (ajustar margem quando sidebar está visível) */
+.content {
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+}
+
+/* MOBILE - para telas até 768px */
+@media (max-width: 768px) {
+  
+  /* Mostrar o botão hamburguer */
+  .menu-toggle {
+    display: block;
+  }
+  
+  /* Sidebar fica escondida (fora da tela à esquerda) */
+  .sidebar {
+    transform: translateX(-100%);
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(52, 58, 64, 0.95); /* fundo com leve transparência */
+    box-shadow: 2px 0 12px rgba(0,0,0,0.5);
+    z-index: 1100;
+  }
+  
+  /* Quando a sidebar estiver ativa, trazemos ela para dentro da tela */
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  /* Conteúdo principal ocupa 100% e sem margem lateral */
+  .content {
+    margin-left: 0;
+    padding: 1rem;
+  }
+  
+  /* Fundo escurecido atrás do menu (overlay) */
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.4);
+    z-index: 1050;
+    display: none;
+  }
+  .overlay.active {
+    display: block;
+  }
+}
+
 
         
     </style>
 </head>
 
 <body>
+                <button class="menu-toggle" aria-label="Abrir menu">
+  &#9776; <!-- Ícone do hambúrguer (três barras) -->
+</button>
 
     <div class="sidebar">
-        <h2>Bem vindo</h2>
+<div class="text-center my-4">
+    <img src="./assets/C.O.S-white.png"
+        alt="C.O.S"
+        class="img-fluid rounded-circle mx-auto d-block"
+        style="max-width: 150px;">
+    <h2 class="mt-3">Bem-vindo</h2>
+</div>
+
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a href="#" class="nav-link active" onclick="showPage('home')"><i class="bi bi-house-door-fill"></i>
@@ -287,6 +386,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
     </div>
 
     <div id="home" class="content">
+
         <h1 class="home-titulo">Realize a contagem agora</h1>
         <span class="line-titulo"></span>
         <div class="info-container">
@@ -309,108 +409,244 @@ $contagem3 = buscarContagem($conn, 5, $date);
     </div>
 
     <div id="contagem" class="content">
-        <h1>Contagens</h1>
-        <div class="contagens">
-            <div class="card">
-                <p>Contagem:</p>
-                <div class="numero">
-                    <?php echo $contagem1; ?>
-                </div>
-                <hr>
-                <div class="categorias">
-                    <span><i class="bi bi-mortarboard-fill"></i> Fundamental I</span>
-                    <span><i class="bi bi-mortarboard-fill"></i> Fundamental II</span>
-                </div>
-            </div>
-            <div class="card">
-                <p>Contagem:</p>
-                <div class="numero">
-                    <?php echo $contagem2; ?>
-                </div>
-                <hr>
-                <div class="categorias">
-                    <span><i class="bi bi-book-fill"></i> Ensino Médio</span>
+ <div class="container py-5">
+        <h1 class="text-center mb-5 display-4 fw-light">Contagens</h1>
+        <div class="row justify-content-center g-4">
+            <!-- Card 1 (85 - Fundamental I e II) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+                    <div class="card-body d-flex flex-column justify-content-center py-4">
+                        <h2 class="text-center display-3 fw-bold text-dark mb-4">85</h2>
+                        <hr class="w-50 mx-auto">
+                        <div class="text-center mt-3">
+                            <p class="mb-2"><i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental I</p>
+                            <p class="mb-0"><i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental II</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card">
-                <p>Contagem:</p>
-                <div class="numero">
-                    <?php echo $contagem3; ?>
+
+            <!-- Card 2 (75 - Ensino Médio) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+                    <div class="card-body d-flex flex-column justify-content-center py-4">
+                        <h2 class="text-center display-3 fw-bold text-dark mb-4">75</h2>
+                        <hr class="w-50 mx-auto">
+                        <div class="text-center mt-3">
+                            <p class="mb-0"><i class="bi bi-book-fill me-2 text-muted"></i> Ensino Médio</p>
+                        </div>
+                    </div>
                 </div>
-                <hr>
-                <div class="categorias">
-                    <span><i class="bi bi-three-dots"></i> Outros</span>
+            </div>
+
+            <!-- Card 3 (49 - Outros) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+                    <div class="card-body d-flex flex-column justify-content-center py-4">
+                        <h2 class="text-center display-3 fw-bold text-dark mb-4">49</h2>
+                        <hr class="w-50 mx-auto">
+                        <div class="text-center mt-3">
+                            <p class="mb-0"><i class="bi bi-three-dots me-2 text-muted"></i> Outros</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+    </div>
 
-    <div id="usuario" class="content">
-        <div class="card-user">
-            
- <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card p-4 shadow rounded-4" style="max-width: 500px; width: 100%;">
-        <div class="d-flex align-items-center mb-4">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-a-TsxH9PktJwB8farsqn2EOlcsO9ODhp_Q&s">
-            <h1 class="h4 mb-0">
-                <?php
-                    $nome = $_SESSION['nome_user368'];
-                    $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
-                    echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
-                ?>
-            </h1>
+<div id="usuario" class="content">
+    <div class="card-user">
+        <div class="container d-flex justify-content-center align-items-center min-vh-100">
+            <div class="card p-4 shadow rounded-4" style="max-width: 500px; width: 100%;">
+                <div class="d-flex align-items-center mb-4">
+                    <img src="./assets/images-removebg-preview.png">
+                    <h1 class="h4 mb-0">
+                        <?php
+                            $nome = $_SESSION['nome_user368'];
+                            $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
+                            echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
+                        ?>
+                    </h1>
+                </div>
+                <form action="../backend/endpoints/user_logout.php" method="POST">
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']); ?>">
+                    <button type="submit" class="btn btn-outline-danger w-100">Sair da Conta</button>
+                </form>
+            </div>
         </div>
-        <form action="../backend/endpoints/user_logout.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']); ?>">
-            <button type="submit" class="btn btn-outline-danger w-100">Sair da Conta</button>
-        </form>
+    </div>
+</div> <!-- FECHAMENTO CORRETO da div #usuario -->
+
+<!-- A PARTIR DAQUI ESTÁ FORA DA DIV #usuario -->
+
+<div id="fundamental1" class="content">
+    <h1>Fundamental I</h1>
+
+    <div class="container">
+        <div class="row g-4 justify-content-center" id="cardsContainer1">
+            <!-- Cartões serão inseridos aqui via JavaScript -->
+        </div>
     </div>
 </div>
 
-    <div id="fundamental1" class="content">
-        <h1>Fundamental I</h1>
-        <p>
-            <div class="container">
-    <div class="row g-4 justify-content-center">
+<script>
+  const anos = ["1°", "2°", "3°", "4°", "5°"];
+  const container = document.getElementById("cardsContainer1");
 
-      <!-- Cartões -->
-      <script>
-        const anos = ["1°", "2°", "3°", "4°", "5°"];
-        document.write(anos.map(ano => `
-          <div class="col-12 col-sm-6 col-md-4 col-lg-2">
-            <div class="card text-center border-danger">
-              <div class="card-body">
-                <h5 class="card-title text-danger">${ano} ANO EF</h5>
-                <hr class="border-danger" />
-                <div class="d-flex align-items-center justify-content-center mb-3">
-                  <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
-                  <span class="fs-4 fw-bold counter">32</span>
-                  <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
-                </div>
-                <button class="btn btn-outline-danger w-100">Confirmar</button>
-              </div>
-            </div>
+  anos.forEach(ano => {
+    const card = document.createElement("div");
+    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
+    card.innerHTML = `
+      <div class="card text-center border-danger">
+        <div class="card-body">
+          <h5 class="card-title text-danger">${ano} ANO EF</h5>
+          <hr class="border-danger" />
+          <div class="d-flex align-items-center justify-content-center mb-3">
+            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
+            <span class="fs-4 fw-bold counter">32</span>
+            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
           </div>
-        `).join(''));
-      </script>
+          <button class="btn btn-outline-danger w-100">Confirmar</button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
 
+  function changeCount(button, delta) {
+    const counter = button.parentElement.querySelector(".counter");
+    let value = parseInt(counter.textContent, 10);
+    value = Math.max(0, value + delta); // impede valor negativo
+    counter.textContent = value;
+  }
+</script>
+<!-- ____________________________________________ -->
+    <div id="fundamental2" class="content">
+  <h1 class="text-center my-4">Fundamental II</h1>
+  
+  <div class="container">
+    <div class="row g-4 justify-content-center" id="cardsContainer2">
+      <!-- Cartões serão inseridos aqui via JavaScript -->
     </div>
   </div>
+</div>
 
-        </p>
+<script>
+  const anosFundamental2 = ["6°", "7°", "8°", "9°"];
+  const container2 = document.getElementById("cardsContainer2");
+
+  anosFundamental2.forEach(ano => {
+    const card = document.createElement("div");
+    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
+    card.innerHTML = `
+      <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-danger">${ano} ANO EF</h5>
+          <hr class="border-danger" />
+          <div class="d-flex align-items-center justify-content-center mb-3">
+            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
+            <span class="fs-4 fw-bold counter">32</span>
+            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
+          </div>
+          <button class="btn btn-outline-danger w-100 mt-auto">Confirmar</button>
+        </div>
+      </div>
+    `;
+    container2.appendChild(card);
+  });
+
+  function changeCount(button, delta) {
+    const counter = button.parentElement.querySelector(".counter");
+    let value = parseInt(counter.textContent, 10);
+    value = Math.max(0, value + delta); // impede valor negativo
+    counter.textContent = value;
+  }
+</script>
+
     </div>
-    <div id="fundamental2" class="content">
-        <h1>Fundamental II</h1>
-        <p></p>
+<div id="ensinoMedio" class="content">
+  <h1 class="text-center my-4">Ensino Médio</h1>
+  
+  <div class="container">
+    <div class="row g-4 justify-content-center" id="cardsContainerEM">
+      <!-- Cartões serão inseridos aqui via JavaScript -->
     </div>
-    <div id="ensinoMedio" class="content">
-        <h1>Ensino Médio</h1>
-        <p></p>
+  </div>
+</div>
+
+<script>
+  const anosEM = ["1° EM", "2° EM", "3° EM"];
+  const containerEM = document.getElementById("cardsContainerEM");
+
+  anosEM.forEach(ano => {
+    const card = document.createElement("div");
+    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
+    card.innerHTML = `
+      <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <h5 class="card-title text-danger">${ano}</h5>
+          <hr class="border-danger" />
+          <div class="d-flex align-items-center justify-content-center mb-3">
+            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
+            <span class="fs-4 fw-bold counter">32</span>
+            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
+          </div>
+          <button class="btn btn-outline-danger w-100 mt-auto">Confirmar</button>
+        </div>
+      </div>
+    `;
+    containerEM.appendChild(card);
+  });
+
+  function changeCount(button, delta) {
+    const counter = button.parentElement.querySelector(".counter");
+    let value = parseInt(counter.textContent, 10);
+    value = Math.max(0, value + delta); // impede valor negativo
+    counter.textContent = value;
+  }
+</script>
+
+<div id="outros" class="content py-4">
+  <div class="container text-center">
+    <!-- Título -->
+    <h1 class="mb-1 text-danger">Outros</h1>
+    <hr class="mx-auto mb-4 border-danger" style="width: 200px; border-width: 2px;">
+
+    <!-- Grade de botões em 3 colunas -->
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+      <div class="col">
+        <a href="senai.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> SENAI
+        </a>
+      </div>
+      <div class="col">
+        <a href="personaliza.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Personaliza
+        </a>
+      </div>
+      <div class="col">
+        <a href="topico-avancado.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Tópico Avançado
+        </a>
+      </div>
+      <div class="col">
+        <a href="autorizados.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Autorizados
+        </a>
+      </div>
+      <div class="col">
+        <a href="para-gabaritar.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Para Gabaritar
+        </a>
+      </div>
+      <div class="col">
+        <a href="robotica.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Robótica
+        </a>
+      </div>
     </div>
-    <div id="outros" class="content">
-        <h1>Outros</h1>
-        <p></p>
-    </div>
+
 
     <div id="configuracoes" class="content">
         <h1>Configurações</h1>
@@ -471,6 +707,28 @@ $contagem3 = buscarContagem($conn, 5, $date);
       value = Math.max(0, value + delta);
       span.textContent = value;
     }
+  </script>
+  <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+const sidebar = document.querySelector('.sidebar');
+
+// Criar overlay para escurecer fundo
+const overlay = document.createElement('div');
+overlay.classList.add('overlay');
+document.body.appendChild(overlay);
+
+// Abrir menu
+menuToggle.addEventListener('click', () => {
+  sidebar.classList.toggle('active');
+  overlay.classList.toggle('active');
+});
+
+// Fechar menu ao clicar fora
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('active');
+  overlay.classList.remove('active');
+});
+
   </script>
 </body>
 
