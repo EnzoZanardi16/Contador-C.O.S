@@ -5,20 +5,26 @@ date_default_timezone_set("America/Sao_Paulo");
 $hoje = date("Y-m-d"); 
 
 try { 
-    // Consulta para obter todas as contagens e somar as qtd_contagem 
-    $stmt = $conn->prepare("SELECT contagens.*, turmas.nome_turma, 
-        (SELECT SUM(qtd_contagem) FROM contagens WHERE DATE(data_contagem) = :hoje) AS soma 
-        FROM contagens 
-        INNER JOIN turmas ON contagens.turmas_id_turma = turmas.id_turma 
-        WHERE DATE(contagens.data_contagem) = :hoje"); 
+    // Consulta agrupada por turma
+    $stmt = $conn->prepare("
+SELECT 
+    CASE 
+        WHEN turmas.id_turma IN (1,2,3,4,5,6,7,8) THEN 'Fundamental'
+        WHEN turmas.id_turma IN (10,11,12) THEN 'Medio'
+        ELSE 'Outros'
+    END AS categoria,
+    SUM(contagens.qtd_contagem) AS soma
+FROM contagens
+INNER JOIN turmas ON contagens.turmas_id_turma = turmas.id_turma
+WHERE DATE(contagens.data_contagem) = :hoje
+GROUP BY categoria
+
+    "); 
     
     $stmt->bindParam(":hoje", $hoje); 
     $stmt->execute(); 
-
-    // Recuperar todos os resultados 
     $contagens = $stmt->fetchAll(PDO::FETCH_ASSOC); 
 
-    // Verifique se existem dados 
     if ($contagens) { 
         echo json_encode($contagens); 
     } else { 

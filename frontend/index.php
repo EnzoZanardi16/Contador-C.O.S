@@ -2,132 +2,176 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Culinária Otimizada</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 30px;
-            background-color: #f9f9f9;
-        }
+body {
+  height: 100vh;
+  background-image: url('../public/images/Culinária Otimizada.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
 
-        div {
-            height: 80%;
-            width: 39%;
-        }
+@media (max-width: 768px) {
+  body {
+    background-image: none; /* remove a imagem */
+    background-color: #B91C1C; /* aplica a cor */
+  }
+}
 
-        div:nth-of-type(1) img {
-            height: 100px;
-            width: auto;
-        }
 
-        div:nth-of-type(1) {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+    .titulo-topo {
+      font-size: 36px;
+      color: #FFF9EB;
+      margin-bottom: 10px;
+      z-index: 1;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-        div:nth-of-type(2) {
-            background-color: #FFEBEB;
-            border-radius: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+    .card {
+      z-index: 1;
+      background-color: #FFF9EB;
+      padding: 1px 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      width: 400px;
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -1%;
+    }
 
-        form{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 40px;
-            flex-direction: column;
-            width: 80%;
-        }
-        input{
-            background: transparent;
-            border:none;
-            width: 90%;
-            height: 50px;
-            font-size: 24px;
+    .logo {
+      width: 100px;
+      margin-bottom: 15px;
+    }
 
-        }
-        input:focus{
-            outline: none;
-        }
-        fieldset{
-            width: 100%;
-            height: 84px;
-            border: #FF3636 3px solid;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        input[type="checkbox"] {
-            width: 30px;
-            height: 30px;
-            appearance: none; 
-            border: 2px solid #FF3636; 
-            position: relative;
-            background-color: white; 
-            cursor: pointer;
-        }
+    .titulo-card {
+      text-align: center;
+      font-size: 32px;
+      color: #B91C1C;
+      margin-bottom: 30px;
+    }
 
-        input[type="checkbox"]:checked {
-            background-color: #FF3636; 
-            border: 2px solid #FF3636; 
-        }
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        input[type="checkbox"]:checked::before {
-            content: '✔'; 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 20px;
-            color: white; 
-        }
-        legend{
-            font-size: 24px;
-            margin-left: 30px;
-            padding-inline: 12px;
-        }
-    </style>
+    fieldset {
+      border: 3px solid #B91C1C;
+      border-radius: 20px;
+      padding: 10px 20px;
+    }
+
+    legend {
+      padding: 0 10px;
+      font-size: 18px;
+      color: #B91C1C;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      border: none;
+      background: transparent;
+      width: 100%;
+      height: 40px;
+      font-size: 18px;
+      color: #333;
+    }
+
+    input:focus {
+      outline: none;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #B91C1C;
+      cursor: pointer;
+    }
+
+    label {
+      font-size: 14px;
+      color: #B91C1C;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 18px;
+      background-color: #B91C1C;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #a31414;
+    }
+  </style>
 </head>
 
-<body>
-    <div>
-    <img src="../public/images/logo.png" alt="Culinaria Otimizada Logo" class="fade-in">
-        <h1 style="font-size: 70px; color: #FF3636; text-align: center;">Culinária<br>Otimizada</h1>
-    </div>
-    <hr style="border: none; height: 70%;width: 4px;border-radius: 50px; background-color: #FF3636;">
-    <div>
+<body class="aturmaa">
+
+  <!-- Título fora do card -->
+  <div class="titulo-topo">
+    <img src="../public/images/C.O.S-white.png" alt="Logo" class="logo" />
+    Culinária
+  </div>
+
+  <!-- Card com "Otimizada" e o formulário -->
+  <div class="card">
+    <div class="titulo-card">Otimizada</div>
+
         <form action="../backend/endpoints/user_login.php" method="POST">
             <fieldset>
-                <legend>Nome</legend>
-                <input type="text" name="nome_user368" id="nome_user368">
+                <legend>Usuário</legend>
+                <input type="text" name="nome_user368" required />
             </fieldset>
+
             <fieldset>
                 <legend>Senha</legend>
-                <input type="password" name="senha_user368" id="senha_user368">
+                <input type="password" name="senha_user368" required />
             </fieldset>
 
-            <button style="cursor: pointer; font-size: 30px; border-radius: 10px; color: white; padding-inline: 45px; height: 60px; border: none; background-color: #FF3636;" type="submit">Entrar</button>
+            <div class="checkbox-container">
+                <input type="checkbox" id="lembrar" name="lembrar" />
+                <label for="lembrar">Lembrar minha senha</label>
+            </div>
 
+            <button type="submit">Entrar</button>
         </form>
-    </div>
+  </div>
 </body>
+
 </html>

@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
 require_once "../config/db.php"; // Conexão centralizada
+date_default_timezone_set('America/Sao_Paulo'); // Fuso horário de Brasília
 
 // Verifica se a requisição é POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {

@@ -268,7 +268,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(52, 58, 64, 0.95); /* fundo com leve transparência */
+    background-color: #BB2A2A; /* fundo com leve transparência */
     box-shadow: 2px 0 12px rgba(0,0,0,0.5);
     z-index: 1100;
     overflow-y: auto;
@@ -392,10 +392,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
                     ?>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link" onclick="showPage('configuracoes')"><i class="bi bi-gear-fill"></i>
-                    Configurações</a>
-            </li>
+     
         </ul>
     </div>
 
@@ -422,52 +419,64 @@ $contagem3 = buscarContagem($conn, 5, $date);
         </div>
     </div>
 
-    <div id="contagem" class="content">
- <div class="container py-5">
-        <h1 class="text-center mb-5 display-4 fw-light">Contagens</h1>
-        <div class="row justify-content-center g-4">
-            <!-- Card 1 (85 - Fundamental I e II) -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-                    <div class="card-body d-flex flex-column justify-content-center py-4">
-                        <h2 class="text-center display-3 fw-bold text-dark mb-4">85</h2>
-                        <hr class="w-50 mx-auto">
-                        <div class="text-center mt-3">
-                            <p class="mb-2"><i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental I</p>
-                            <p class="mb-0"><i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental II</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div id="contagem" class="content">
+  <div class="container py-5">
+    <h1 class="text-center mb-5 display-4 fw-light">Contagens</h1>
+    <div class="row justify-content-center g-4">
 
-            <!-- Card 2 (75 - Ensino Médio) -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-                    <div class="card-body d-flex flex-column justify-content-center py-4">
-                        <h2 class="text-center display-3 fw-bold text-dark mb-4">75</h2>
-                        <hr class="w-50 mx-auto">
-                        <div class="text-center mt-3">
-                            <p class="mb-0"><i class="bi bi-book-fill me-2 text-muted"></i> Ensino Médio</p>
-                        </div>
-                    </div>
-                </div>
+      <!-- Card 1 (85 - Fundamental I e II) -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+          <div class="card-body d-flex flex-column justify-content-center py-4">
+            <h2 id="fundamental" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
+            <hr class="w-50 mx-auto">
+            <div class="text-center mt-3">
+              <p class="mb-2">
+                <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental I
+              </p>
+              <p class="mb-0">
+                <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental II
+              </p>
             </div>
-
-            <!-- Card 3 (49 - Outros) -->
-            <div class="col-lg-3 col-md-6">
-                <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-                    <div class="card-body d-flex flex-column justify-content-center py-4">
-                        <h2 class="text-center display-3 fw-bold text-dark mb-4">49</h2>
-                        <hr class="w-50 mx-auto">
-                        <div class="text-center mt-3">
-                            <p class="mb-0"><i class="bi bi-three-dots me-2 text-muted"></i> Outros</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Card 2 (75 - Ensino Médio) -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+          <div class="card-body d-flex flex-column justify-content-center py-4">
+            <h2 id="medio" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
+            <hr class="w-50 mx-auto">
+            <div class="text-center mt-3">
+              <p class="mb-0">
+                <i class="bi bi-book-fill me-2 text-muted"></i> Ensino Médio
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 (49 - Outros) -->
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+          <div class="card-body d-flex flex-column justify-content-center py-4">
+            <h2 id="outros" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
+            <hr class="w-50 mx-auto">
+            <div class="text-center mt-3">
+              <p class="mb-0">
+                <i class="bi bi-three-dots me-2 text-muted"></i> Outros
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-    </div>
+  </div>
+</div>
+
+
 
 <div id="usuario" class="content">
     <div class="card-user">
@@ -671,105 +680,118 @@ $contagem3 = buscarContagem($conn, 5, $date);
 
 
 
-    <div id="configuracoes" class="content">
-        <h1>Configurações</h1>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+<script>
+  // Função para trocar de página
+  function showPage(pageId) {
+    document.querySelectorAll('.content').forEach(page => {
+      page.style.display = 'none';
+      page.style.opacity = 0;
+    });
+    const targetPage = document.getElementById(pageId);
+    targetPage.style.display = 'flex';
+    setTimeout(() => {
+      targetPage.style.opacity = 1;
+    }, 50);
 
-        <p>Configurações do sistema.</p>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script>
-        function showPage(pageId) {
-            document.querySelectorAll('.content').forEach(page => {
-                page.style.display = 'none';
-                page.style.opacity = 0;
-            });
-            const targetPage = document.getElementById(pageId);
-            targetPage.style.display = 'flex';
-            setTimeout(() => {
-                targetPage.style.opacity = 1;
-            }, 50);
-
-            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-                link.classList.remove('active');
-            });
-            const activeLink = document.querySelector(`.sidebar .nav-link[onclick="showPage('${pageId}')"]`);
-            if (activeLink && !activeLink.classList.contains('dropdown-toggle')) {
-                activeLink.classList.add('active');
-            } else if (activeLink && activeLink.classList.contains('dropdown-toggle')) {
-                activeLink.classList.add('active');
-            }
-            document.querySelectorAll('.sidebar .dropdown-item').forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('onclick') === `showPage('${pageId}')`) {
-                    item.classList.add('active');
-                }
-            });
-        }
-
-        const dataHoje = new Date().toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric'
-        });
-        const dataAtualElement = document.querySelector('#home .info-container p:first-child');
-        if (dataAtualElement) {
-            dataAtualElement.textContent = `Data: ${dataHoje}`;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            showPage('home');
-        });
-    </script>
-    <script>
-    function changeCount(button, delta) {
-      const span = button.parentElement.querySelector('.counter');
-      let value = parseInt(span.textContent);
-      value = Math.max(0, value + delta);
-      span.textContent = value;
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+      link.classList.remove('active');
+    });
+    const activeLink = document.querySelector(`.sidebar .nav-link[onclick="showPage('${pageId}')"]`);
+    if (activeLink && !activeLink.classList.contains('dropdown-toggle')) {
+      activeLink.classList.add('active');
+    } else if (activeLink && activeLink.classList.contains('dropdown-toggle')) {
+      activeLink.classList.add('active');
     }
-  </script>
-  <script>
-    const menuToggle = document.querySelector('.menu-toggle');
-const sidebar = document.querySelector('.sidebar');
+    document.querySelectorAll('.sidebar .dropdown-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.getAttribute('onclick') === `showPage('${pageId}')`) {
+        item.classList.add('active');
+      }
+    });
+  }
 
-// Criar overlay para escurecer fundo
-const overlay = document.createElement('div');
-overlay.classList.add('overlay');
-document.body.appendChild(overlay);
-
-// Abrir menu
-menuToggle.addEventListener('click', () => {
-  sidebar.classList.toggle('active');
-  overlay.classList.toggle('active');
-});
-
-// Fechar menu ao clicar fora
-overlay.addEventListener('click', () => {
-  sidebar.classList.remove('active');
-  overlay.classList.remove('active');
-});
-
-  </script>
-  <script>
-  const toggleButton = document.querySelector('.menu-toggle');
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  document.body.appendChild(overlay);
-
-  toggleButton.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
+  // Atualiza a data
+  const dataHoje = new Date().toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
   });
+  const dataAtualElement = document.querySelector('#home .info-container p:first-child');
+  if (dataAtualElement) {
+    dataAtualElement.textContent = `Data: ${dataHoje}`;
+  }
 
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
+  // Contador (+/-)
+  function changeCount(button, delta) {
+    const span = button.parentElement.querySelector('.counter');
+    let value = parseInt(span.textContent);
+    value = Math.max(0, value + delta);
+    span.textContent = value;
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Exibe a página padrão
+    showPage('contagem');
+
+    // Menu toggle e overlay
+    const toggleButton = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    document.body.appendChild(overlay);
+
+    toggleButton.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+
+    // Busca dados do backend
+    fetch("../backend/endpoints/contagens_dia.php")
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        console.log("Dados recebidos:", data);
+
+        if (data.error) {
+          console.error("Erro retornado do servidor:", data.error);
+          if (data.message) console.error("Detalhes:", data.message);
+          return;
+        }
+
+        if (Array.isArray(data)) {
+          data.forEach(item => {
+            const categoria = item.categoria;
+            const soma = item.soma;
+
+            const id = categoria.toLowerCase();
+            const el = document.getElementById(id);
+            if (el) {
+              el.textContent = soma;
+            } else {
+              console.warn(`Elemento com id "${id}" não encontrado.`);
+            }
+          });
+        } else {
+          console.error("Formato inesperado dos dados:", data);
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao buscar dados:", error);
+      });
   });
 </script>
+
+
 
 </body>
 
