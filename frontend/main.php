@@ -238,52 +238,28 @@ $contagem3 = buscarContagem($conn, 5, $date);
             align-items: center;
             gap: 0.2em;
         }
+        .menu-toggle {
+  display: none;
+}
+
         /* Estilos gerais para desktop já definidos no seu CSS */
 
 /* Mobile - telas até 768px */
 @media (max-width: 768px) {
-  
- /* Botão hamburguer: padrão escondido */
-.menu-toggle {
-  display: none;
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 1050; /* acima do conteúdo */
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 2rem;
-}
 
-/* Sidebar padrão desktop */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  background-color: #343a40;
-  color: white;
-  transition: transform 0.3s ease;
-  overflow-y: auto;
-  z-index: 1040;
-}
-
-/* Conteúdo principal (ajustar margem quando sidebar está visível) */
-.content {
-  margin-left: 250px;
-  transition: margin-left 0.3s ease;
-}
-
-/* MOBILE - para telas até 768px */
-@media (max-width: 768px) {
-  
   /* Mostrar o botão hamburguer */
   .menu-toggle {
     display: block;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1050; /* acima do conteúdo */
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 2rem;
   }
-  
+
   /* Sidebar fica escondida (fora da tela à esquerda) */
   .sidebar {
     transform: translateX(-100%);
@@ -295,19 +271,25 @@ $contagem3 = buscarContagem($conn, 5, $date);
     background-color: rgba(52, 58, 64, 0.95); /* fundo com leve transparência */
     box-shadow: 2px 0 12px rgba(0,0,0,0.5);
     z-index: 1100;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
   }
-  
+  .sidebar h2{
+    font-size:2;
+  }
+
   /* Quando a sidebar estiver ativa, trazemos ela para dentro da tela */
   .sidebar.active {
     transform: translateX(0);
   }
-  
+
   /* Conteúdo principal ocupa 100% e sem margem lateral */
   .content {
     margin-left: 0;
     padding: 1rem;
+    transition: margin-left 0.3s ease;
   }
-  
+
   /* Fundo escurecido atrás do menu (overlay) */
   .overlay {
     position: fixed;
@@ -319,20 +301,52 @@ $contagem3 = buscarContagem($conn, 5, $date);
     z-index: 1050;
     display: none;
   }
+
   .overlay.active {
     display: block;
   }
+
+  /* >>> NOVO BLOCO: Card do usuário empilhado (layout vertical) <<< */
+  .card-usuario {
+    display: flex;
+    flex-direction: column; /* empilha os itens verticalmente */
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .card-usuario img,
+  .card-usuario svg {
+    max-width: 100px;
+    height: auto;
+  }
+
+  .card-usuario h2 {
+    font-size: 1.2em;
+    word-break: break-word;
+  }
+    body {
+    display: block;
+  }
+
+  .card-usuario {
+    width: 100%;
+    padding: 1rem;
+  }
+
 }
 
 
         
     </style>
 </head>
-
-<body>
+<header>
                 <button class="menu-toggle" aria-label="Abrir menu">
   &#9776; <!-- Ícone do hambúrguer (três barras) -->
 </button>
+</header>
+<body>
+
 
     <div class="sidebar">
 <div class="text-center my-4">
@@ -645,7 +659,16 @@ $contagem3 = buscarContagem($conn, 5, $date);
           <i class="bi bi-mortarboard-fill me-2"></i> Robótica
         </a>
       </div>
+      <!-- Botão Cadastrar ajustado -->
+      <div class="col">
+        <a href="Cadastrar.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
+          <i class="bi bi-mortarboard-fill me-2"></i> Cadastrar
+        </a>
+      </div>
     </div>
+  </div>
+</div>
+
 
 
     <div id="configuracoes" class="content">
@@ -730,6 +753,24 @@ overlay.addEventListener('click', () => {
 });
 
   </script>
+  <script>
+  const toggleButton = document.querySelector('.menu-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  document.body.appendChild(overlay);
+
+  toggleButton.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+</script>
+
 </body>
 
 </html>
