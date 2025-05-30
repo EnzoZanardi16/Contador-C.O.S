@@ -1,16 +1,22 @@
 <?php
 session_start();
-require '../backend/config/db.php';
+// O require do db.php deve instanciar a variável $conn
+require '../backend/config/db.php'; // Garanta que $conn seja inicializada aqui.
 
-$date = date('Y-m-d');
-$nome = $_SESSION['nome_user368'];
-
+// Configurações de exibição de erros
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Função para buscar a soma da contagem por categoria
-function buscarContagem($conn, $categoria, $data)
+// Variáveis de sessão e data
+$dataAtualFormatadaParaSQL = date('Y-m-d');
+$nomeUsuario = $_SESSION['nome_user368'] ?? 'Usuário'; // Define um nome padrão
+$nomeUsuarioFormatado = mb_convert_case($nomeUsuario, MB_CASE_TITLE, "UTF-8");
+$tokenSessao = $_SESSION['token'] ?? '';
+
+// Função para buscar a soma da contagem por categoria (exemplo, se fosse usada no PHP)
+// Atualmente, a lógica principal de contagem é carregada via JS por contagens_dia.php
+function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
 {
     $sql = "SELECT SUM(c.qtd_contagem) AS total 
             FROM contagens c 
@@ -25,71 +31,64 @@ function buscarContagem($conn, $categoria, $data)
     return $resultado['total'] ?? 0;
 }
 
-// Função para buscar turmas da categoria "Outros"
-function buscarTurmasOutros($conn)
-{
-    $sql = "SELECT * FROM turmas WHERE id_turma > 12";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+// Exemplo de como poderia ser usado se os dados fossem pré-carregados pelo PHP:
+// $contagemFund1PHP = buscarSomaContagemPorCategoriaPHP($conn, 1, $dataAtualFormatadaParaSQL) +
+//                     buscarSomaContagemPorCategoriaPHP($conn, 2, $dataAtualFormatadaParaSQL) +
+//                     buscarSomaContagemPorCategoriaPHP($conn, 3, $dataAtualFormatadaParaSQL);
+// $contagemFund2PHP = buscarSomaContagemPorCategoriaPHP($conn, 4, $dataAtualFormatadaParaSQL);
+// $contagemMedioPHP = buscarSomaContagemPorCategoriaPHP($conn, 5, $dataAtualFormatadaParaSQL);
 
-// Contagens por categoria
-$contagem1 = buscarContagem($conn, 1, $date) + buscarContagem($conn, 2, $date) + buscarContagem($conn, 3, $date);
-$contagem2 = buscarContagem($conn, 4, $date);
-$contagem3 = buscarContagem($conn, 5, $date);
-
-// Verifica se a categoria "outros" foi chamada
-if (isset($_GET['categoria']) && $_GET['categoria'] === 'outros') {
-    $turmasOutros = buscarTurmasOutros($conn);
-}
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contador de Alunos SESI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
         body {
             display: flex;
             min-height: 100vh;
             background-color: #f8f9fa;
             font-family: sans-serif;
-
         }
 
         .sidebar {
             width: 280px;
             background-color: #b32424;
-            /* Vermelho mais escuro */
             color: white;
             padding: 20px;
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
+            transition: transform 0.3s ease; /* Para menu responsivo */
         }
 
         .sidebar h2 {
             color: white;
-            font-size: 2.8em;
-            /* Maior */
-            margin-bottom: 30px;
+            font-size: 1.8em; /* Ajustado para caber melhor com a imagem */
+            margin-bottom: 15px; /* Reduzido */
             text-align: left;
             font-weight: bold;
         }
 
+        .sidebar .sidebar-header { /* Novo container para logo e título */
+            text-align: center;
+            margin-bottom: 20px; /* Espaço abaixo do header */
+            width: 100%;
+        }
+        .sidebar .sidebar-header img {
+            max-width: 120px; /* Ajuste o tamanho do logo conforme necessário */
+            margin-bottom: 10px;
+        }
+
+
         .sidebar .nav-item {
             margin-bottom: 15px;
-            /* Maior espaçamento */
             width: 100%;
         }
 
@@ -103,7 +102,8 @@ if (isset($_GET['categoria']) && $_GET['categoria'] === 'outros') {
             transition: background-color 0.2s ease-in-out;
         }
 
-        .sidebar .nav-link:hover {
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active { /* Estilo para link ativo */
             background-color: rgba(255, 255, 255, 0.2);
         }
 
@@ -120,310 +120,344 @@ if (isset($_GET['categoria']) && $_GET['categoria'] === 'outros') {
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
             border-top: 8px solid white;
-            /* Triângulo branco */
             margin-left: 5px;
             vertical-align: middle;
         }
 
         .sidebar .dropdown-menu {
-            background-color: #f8d7da;
-            /* Fundo mais claro para o dropdown */
+            background-color: #c73838; /* Tom mais claro do vermelho da sidebar */
             border: none;
             padding: 0;
             margin-top: 0;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: 100%;
-            /* Ocupar a largura total */
         }
 
         .sidebar .dropdown-item {
-            color: #333;
+            color: white; /* Texto branco para melhor contraste */
             padding: 10px 20px;
             text-decoration: none;
             display: block;
             transition: background-color 0.2s ease-in-out;
         }
 
-        .sidebar .dropdown-item:hover {
-            background-color: #e9ecef;
+        .sidebar .dropdown-item:hover,
+        .sidebar .dropdown-item.active { /* Estilo para item de dropdown ativo */
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+         .sidebar .dropdown-item i {
+            margin-right: 8px;
         }
 
         .content {
             flex: 1;
             padding: 30px;
-            display: flex;
+            display: none; /* Todas as páginas começam ocultas */
             flex-direction: column;
             align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
+        .content.active { /* Página ativa é exibida */
+            display: flex;
+            opacity: 1;
+        }
+
 
         .content h1 {
             color: #333;
-            font-size: 3em;
-            /* Maior */
+            font-size: 2.5em; /* Ajustado */
             margin-bottom: 30px;
             text-align: center;
+        }
+        
+        #home h1.home-titulo { /* Título específico da home */
+             font-size: 2.8em;
         }
 
         .info-container {
             background-color: white;
-            padding: 20px;
+            padding: 25px; /* Aumentado */
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); /* Sombra mais suave */
             text-align: left;
-            margin-bottom: 20px;
-            width: 80%;
-            max-width: 900px;
+            margin-bottom: 25px; /* Aumentado */
+            width: 100%; /* Ajustado */
+            max-width: 850px; /* Ajustado */
         }
 
         .info-container p {
             color: #555;
-            line-height: 1.6;
-            margin-bottom: 10px;
-            font-size: 1.4em;
-            /* Fonte um pouco menor */
+            line-height: 1.7; /* Melhorado */
+            margin-bottom: 12px; /* Ajustado */
+            font-size: 1.1em; /* Ajustado */
         }
+        .info-container p:first-child {
+             font-weight: bold;
+             color: #333;
+         }
 
         .contact-container {
             text-align: left;
-            width: 80%;
-            max-width: 900px;
+            width: 100%; /* Ajustado */
+            max-width: 850px; /* Ajustado */
         }
 
         .contact-item {
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px; /* Aumentado */
         }
 
         .contact-item i {
             color: #b32424;
-            /* Vermelho mais escuro para os ícones */
-            margin-right: 10px;
-            font-size: 1.8em;
+            margin-right: 12px; /* Aumentado */
+            font-size: 1.5em; /* Ajustado */
         }
 
         .contact-item span {
-            font-size: 1.4em;
+            font-size: 1.1em; /* Ajustado */
             color: #333;
-            /* Texto preto */
         }
+        .contact-item a { /* Estilo para links nos contatos */
+            text-decoration: none;
+            color: inherit; /* Herda a cor do span */
+            display: contents; /* Para que o <a> não quebre o flex */
+        }
+         .contact-item a:hover span {
+             color: #b32424; /* Muda cor do texto no hover */
+         }
 
-        /* Estilos para as páginas ocultas inicialmente */
-        .content[id="contagem"],
-        .content[id="usuario"],
-        .content[id="configuracoes"] {
-            display: none;
-            opacity: 0;
-            animation: none;
-        }
-
-        .content[id="home"] {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            opacity: 1;
-        }
-
-        #home .info-container p:first-child {
-            margin-bottom: 20px;
-            /* Espaçamento para a data */
-        }
 
         .line-titulo {
-            width: 200px;
-            height: 2px;
-            background-color: red;
+            width: 150px; /* Ajustado */
+            height: 3px; /* Ajustado */
+            background-color: #b32424; /* Cor principal */
             margin-bottom: 30px;
+            border-radius: 2px;
         }
 
-        .contagens {
-            width: 900px;
+        /* Estilos para página de Contagem (cards de resumo) */
+        #pagina-contagem .card {
+            min-height: 220px; /* Ajustado */
+        }
+        #pagina-contagem .card h2 {
+            font-size: 2.8em; /* Tamanho do número da contagem */
+        }
+        #pagina-contagem .card p {
+            font-size: 1em; /* Tamanho do texto da categoria */
+        }
+         #pagina-contagem .card i {
+             font-size: 1.2em;
+         }
+
+
+        /* Estilos para cards de turmas (Fundamental I, II, Médio, Outros) */
+        .cards-turmas-container .card {
+            background-color: #fff;
+            border: 1px solid #ddd; /* Borda sutil */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .cards-turmas-container .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .cards-turmas-container .card-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #b32424;
+        }
+        .cards-turmas-container .counter {
+            font-size: 2em; /* Tamanho do contador */
+            font-weight: bold;
+            color: #333;
+        }
+        .cards-turmas-container .btn-counter {
+            font-size: 1.2em;
+            padding: 0.3em 0.6em;
+        }
+        .cards-turmas-container .btn-confirmar {
+            font-weight: bold;
+        }
+
+        /* Estilo para cards "Outros" personalizados */
+        .cards-turmas-container .card.card-outros-personalizado {
+            background-color: #b32424; /* Cor principal */
+            color: white;
+            border: none;
+        }
+        .cards-turmas-container .card.card-outros-personalizado .card-title {
+            color: white;
+        }
+        .cards-turmas-container .card.card-outros-personalizado hr {
+            border-top: 1px solid rgba(255,255,255,0.5);
+        }
+        .cards-turmas-container .card.card-outros-personalizado .counter {
+            color: white;
+        }
+        .cards-turmas-container .card.card-outros-personalizado .btn-counter,
+        .cards-turmas-container .card.card-outros-personalizado .btn-confirmar {
+            background-color: white;
+            color: #b32424;
+            border-color: white;
+        }
+         .cards-turmas-container .card.card-outros-personalizado .btn-counter:hover,
+         .cards-turmas-container .card.card-outros-personalizado .btn-confirmar:hover {
+            background-color: #f0f0f0;
+            color: #b32424;
+         }
+
+
+        /* Card do Usuário */
+        #pagina-usuario .card-user-container { /* Container para centralizar */
             display: flex;
-            gap: 10px;
             justify-content: center;
-        }
-
-        .contagens .card {
-            width: 290px;
-            height: 400px;
-            text-align: center;
-            font-size: 1.8em;
-        }
-
-        .contagens .card .categorias {
-            display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.2em;
+            width: 100%;
+            min-height: 70vh; /* Para ocupar mais espaço vertical */
         }
+        #pagina-usuario .card {
+            max-width: 450px; /* Ajustado */
+            width: 100%;
+        }
+         #pagina-usuario .card img {
+             max-width: 80px; /* Imagem menor */
+             margin-right: 15px;
+         }
+         #pagina-usuario .card h1.h4 { /* Nome do usuário */
+             font-size: 1.5em;
+         }
+
+
         .menu-toggle {
-  display: none;
-}
+            display: none; /* Oculto por padrão em telas maiores */
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1101; /* Acima da sidebar */
+            background: #b32424; /* Cor de fundo */
+            color: white; /* Cor do ícone */
+            border: none;
+            cursor: pointer;
+            font-size: 1.8rem; /* Tamanho do ícone */
+            padding: 0.5rem 0.8rem; /* Padding */
+            border-radius: 5px; /* Bordas arredondadas */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
-        /* Estilos gerais para desktop já definidos no seu CSS */
-
-/* Mobile - telas até 768px */
-@media (max-width: 768px) {
-
-  /* Mostrar o botão hamburguer */
-  .menu-toggle {
-    display: block;
-    position: fixed;
-    top: 1rem;
-    left: 1rem;
-    z-index: 1050; /* acima do conteúdo */
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-size: 2rem;
-  }
-
-  /* Sidebar fica escondida (fora da tela à esquerda) */
-  .sidebar {
-    transform: translateX(-100%);
-    width: 250px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #BB2A2A; /* fundo com leve transparência */
-    box-shadow: 2px 0 12px rgba(0,0,0,0.5);
-    z-index: 1100;
-    overflow-y: auto;
-    transition: transform 0.3s ease;
-  }
-  .sidebar h2{
-    font-size:2;
-  }
-
-  /* Quando a sidebar estiver ativa, trazemos ela para dentro da tela */
-  .sidebar.active {
-    transform: translateX(0);
-  }
-
-  /* Conteúdo principal ocupa 100% e sem margem lateral */
-  .content {
-    margin-left: 0;
-    padding: 1rem;
-    transition: margin-left 0.3s ease;
-  }
-
-  /* Fundo escurecido atrás do menu (overlay) */
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 1050;
-    display: none;
-  }
-
-  .overlay.active {
-    display: block;
-  }
-
-  /* >>> NOVO BLOCO: Card do usuário empilhado (layout vertical) <<< */
-  .card-usuario {
-    display: flex;
-    flex-direction: column; /* empilha os itens verticalmente */
-    align-items: center;
-    text-align: center;
-    gap: 10px;
-  }
-
-  .card-usuario img,
-  .card-usuario svg {
-    max-width: 100px;
-    height: auto;
-  }
-
-  .card-usuario h2 {
-    font-size: 1.2em;
-    word-break: break-word;
-  }
-    body {
-    display: block;
-  }
-
-  .card-usuario {
-    width: 100%;
-    padding: 1rem;
-  }
-
-}
+        .overlay-menu { /* Para escurecer o fundo quando o menu mobile estiver aberto */
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1099; /* Abaixo da sidebar, mas acima do conteúdo */
+        }
+        .overlay-menu.active {
+            display: block;
+        }
 
 
-        
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Empilha sidebar e content */
+            }
+            .menu-toggle {
+                display: block; /* Mostra o botão hamburguer */
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                z-index: 1100;
+                transform: translateX(-100%); /* Escondido por padrão */
+                box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+            }
+            .sidebar.active {
+                transform: translateX(0); /* Mostra a sidebar */
+            }
+            .content {
+                padding: 20px; /* Padding menor em mobile */
+                margin-left: 0; /* Conteúdo ocupa toda a largura */
+            }
+            .content h1 {
+                font-size: 2em;
+            }
+            #home h1.home-titulo {
+                font-size: 2.2em;
+            }
+            .info-container, .contact-container {
+                max-width: 100%;
+                padding: 20px;
+            }
+            .info-container p, .contact-item span {
+                font-size: 1em;
+            }
+            #pagina-contagem .card {
+                min-height: 180px;
+            }
+            #pagina-contagem .card h2 {
+                font-size: 2.2em;
+            }
+            .cards-turmas-container .col-12 { /* Garante que os cards ocupem mais espaço em mobile */
+                flex: 0 0 auto;
+                width: 80%; /* Ocupa 80% para centralizar melhor */
+            }
+            .cards-turmas-container .row > * { /* Centraliza os cards */
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
     </style>
-    <!-- SweetAlert2 (com Bootstrap 5 integrado) -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
-<header>
-                <button class="menu-toggle" aria-label="Abrir menu">
-  &#9776; <!-- Ícone do hambúrguer (três barras) -->
-</button>
-</header>
-<body>
 
+<body>
+    <button class="menu-toggle" aria-label="Abrir menu">☰</button>
+    <div class="overlay-menu"></div>
 
     <div class="sidebar">
-<div class="text-center my-4">
-    <img src="./assets/C.O.S-white.png"
-        alt="C.O.S"
-        class="img-fluid rounded-circle mx-auto d-block"
-        style="max-width: 150px;">
-    <h2 class="mt-3">Bem-vindo</h2>
-</div>
+        <div class="sidebar-header">
+            <img src="./assets/C.O.S-white.png" alt="Logo C.O.S" class="img-fluid">
+            <h2>Bem-vindo</h2>
+        </div>
 
-        <ul class="nav flex-column">
+        <ul class="nav flex-column w-100">
             <li class="nav-item">
-                <a href="#" class="nav-link active" onclick="showPage('home')"><i class="bi bi-house-door-fill"></i>
-                    Home</a>
+                <a href="#" class="nav-link" data-page="pagina-home"><i class="bi bi-house-door-fill"></i> Home</a>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" onclick="showPage('contagem')"><i class="bi bi-bar-chart-fill"></i>
-                    Contagem</a>
+                <a href="#" class="nav-link" data-page="pagina-contagem"><i class="bi bi-bar-chart-fill"></i> Contagem Geral</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownNivelEnsino" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="bi bi-mortarboard-fill"></i> Nível de Ensino
                 </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#" onclick="showPage('fundamental1')"><i
-                                class="bi bi-mortarboard-fill"></i> Fundamental I</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="showPage('fundamental2')"><i
-                                class="bi bi-mortarboard-fill"></i> Fundamental II</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="showPage('ensinoMedio')"><i
-                                class="bi bi-book-fill"></i> Ensino Médio</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="showPage('outros')"><i class="bi bi-three-dots"></i>
-                            Outros</a></li>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdownNivelEnsino">
+                    <li><a class="dropdown-item" href="#" data-page="pagina-fundamental1"><i class="bi bi-pencil-fill"></i> Fundamental I</a></li>
+                    <li><a class="dropdown-item" href="#" data-page="pagina-fundamental2"><i class="bi bi-journal-bookmark-fill"></i> Fundamental II</a></li>
+                    <li><a class="dropdown-item" href="#" data-page="pagina-ensinoMedio"><i class="bi bi-book-fill"></i> Ensino Médio</a></li>
+                    <li><a class="dropdown-item" href="#" data-page="pagina-outros"><i class="bi bi-three-dots"></i> Outros</a></li>
                 </ul>
             </li>
             <li class="nav-item">
-                <a href="#" class="nav-link" onclick="showPage('usuario')">
+                <a href="#" class="nav-link" data-page="pagina-usuario">
                     <i class="bi bi-person-fill"></i>
-                    <?php
-                    $nome = $_SESSION['nome_user368'];
-                    $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
-                    echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
-                    ?>
+                    <?php echo htmlspecialchars($nomeUsuarioFormatado, ENT_QUOTES, 'UTF-8'); ?>
                 </a>
             </li>
-     
         </ul>
     </div>
 
-    <div id="home" class="content">
-
+    <div id="pagina-home" class="content">
         <h1 class="home-titulo">Realize a contagem agora</h1>
         <span class="line-titulo"></span>
         <div class="info-container">
-            <p>Data: 17/10/2024</p>
+            <p id="data-atual-home">Data: Carregando...</p>
             <p>Seja bem-vindo ao Contador de Alunos do SESI, uma ferramenta digital desenvolvida para monitorar, em
                 tempo real, o número de alunos. Este sistema foi criado com o objetivo de oferecer uma visão clara e
                 acessível sobre a quantidade de estudantes no dia, proporcionando praticidade e facilidade de
@@ -431,398 +465,441 @@ if (isset($_GET['categoria']) && $_GET['categoria'] === 'outros') {
         </div>
         <div class="contact-container">
             <div class="contact-item">
-                <a href="https://maps.app.goo.gl/TqAfypWhLpFdygLa9"><i class="bi bi-geo-alt-fill"></i></a>
-                <span>SESI - Regente Feijó</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=SESI+Regente+Feijo" target="_blank" rel="noopener noreferrer">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>SESI - Regente Feijó</span>
+                </a>
             </div>
             <div class="contact-item">
-                <i class="bi bi-whatsapp"></i>
-                <span>Contato: codingthefuture.cf@gmail.com</span>
+                 <a href="mailto:codingthefuture.cf@gmail.com">
+                    <i class="bi bi-envelope-fill"></i> <span>codingthefuture.cf@gmail.com</span>
+                </a>
             </div>
         </div>
     </div>
 
-<div id="contagem" class="content">
-  <div class="container py-5">
-    <h1 class="text-center mb-5 display-4 fw-light">Contagens</h1>
-    <div class="row justify-content-center g-4">
-
-    
-      <div class="col-lg-3 col-md-6">
-        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-          <div class="card-body d-flex flex-column justify-content-center py-4">
-            <h2 id="fundamental1c" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
-            <hr class="w-50 mx-auto">
-            <div class="text-center mt-3">
-              <p class="mb-2">
-                <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental I
-              </p>
-  
+    <div id="pagina-contagem" class="content">
+        <div class="container py-4">
+            <h1 class="text-center mb-5 display-5 fw-light">Contagens do Dia</h1>
+            <div class="row justify-content-center g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
+                            <h2 id="contagem-fundamental-i" class="display-3 fw-bold text-dark mb-3">-</h2>
+                            <hr class="w-50 mx-auto my-3">
+                            <p class="mb-0 text-muted"><i class="bi bi-pencil-fill me-2"></i>Fundamental I</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
+                            <h2 id="contagem-fundamental-ii" class="display-3 fw-bold text-dark mb-3">-</h2>
+                            <hr class="w-50 mx-auto my-3">
+                            <p class="mb-0 text-muted"><i class="bi bi-journal-bookmark-fill me-2"></i>Fundamental II</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
+                            <h2 id="contagem-ensino-medio" class="display-3 fw-bold text-dark mb-3">-</h2>
+                            <hr class="w-50 mx-auto my-3">
+                            <p class="mb-0 text-muted"><i class="bi bi-book-fill me-2"></i>Ensino Médio</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card border-0 h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
+                            <h2 id="contagem-outros-geral" class="display-3 fw-bold text-dark mb-3">-</h2>
+                            <hr class="w-50 mx-auto my-3">
+                            <p class="mb-0 text-muted"><i class="bi bi-three-dots me-2"></i>Outros</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-
-
-      <div class="col-lg-3 col-md-6">
-        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-          <div class="card-body d-flex flex-column justify-content-center py-4">
-            <h2 id="fundamental2c" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
-            <hr class="w-50 mx-auto">
-            <div class="text-center mt-3">
-            <p class="mb-0">
-                <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental II
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-lg-3 col-md-6">
-        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-          <div class="card-body d-flex flex-column justify-content-center py-4">
-            <h2 id="medio" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
-            <hr class="w-50 mx-auto">
-            <div class="text-center mt-3">
-              <p class="mb-0">
-                <i class="bi bi-book-fill me-2 text-muted"></i> Ensino Médio
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="col-lg-3 col-md-6">
-        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
-          <div class="card-body d-flex flex-column justify-content-center py-4">
-            <h2 id="outros" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
-            <hr class="w-50 mx-auto">
-            <div class="text-center mt-3">
-              <p class="mb-0">
-                <i class="bi bi-three-dots me-2 text-muted"></i> Outros
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-  </div>
-</div>
 
-
-
-<div id="usuario" class="content">
-    <div class="card-user">
-        <div class="container d-flex justify-content-center align-items-center min-vh-100">
-            <div class="card p-4 shadow rounded-4" style="max-width: 500px; width: 100%;">
+    <div id="pagina-usuario" class="content">
+        <div class="card-user-container">
+            <div class="card p-4 shadow rounded-4">
                 <div class="d-flex align-items-center mb-4">
-                    <img src="./assets/images-removebg-preview.png">
+                    <img src="./assets/images-removebg-preview.png" alt="Ícone do Usuário" class="rounded-circle">
                     <h1 class="h4 mb-0">
-                        <?php
-                            $nome = $_SESSION['nome_user368'];
-                            $nomeFormatado = mb_convert_case($nome, MB_CASE_TITLE, "UTF-8");
-                            echo htmlspecialchars($nomeFormatado, ENT_QUOTES, 'UTF-8');
-                        ?>
+                        <?php echo htmlspecialchars($nomeUsuarioFormatado, ENT_QUOTES, 'UTF-8'); ?>
                     </h1>
                 </div>
-                <form action="../backend/endpoints/user_logout.php" method="POST">
-                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($_SESSION['token']); ?>">
+                <form id="form-logout" action="../backend/endpoints/user_logout.php" method="POST">
+                    <input type="hidden" name="token" value="<?php echo htmlspecialchars($tokenSessao, ENT_QUOTES, 'UTF-8'); ?>">
                     <button type="submit" class="btn btn-outline-danger w-100">Sair da Conta</button>
                 </form>
             </div>
         </div>
     </div>
-</div> <!-- FECHAMENTO CORRETO da div #usuario -->
-<!-- A PARTIR DAQUI ESTÁ FORA DA DIV #usuario -->
-<div id="fundamental1" class="content">
-  <h1>Fundamental I</h1>
-  <div class="container">
-    <div class="row g-4 justify-content-center" id="cardsContainer1">
-      <!-- Cartões serão inseridos aqui via JavaScript -->
-    </div>
-  </div>
-</div>
 
-<div id="fundamental2" class="content">
-  <h1 class="text-center my-4">Fundamental II</h1>
-  <div class="container">
-    <div class="row g-4 justify-content-center" id="cardsContainer2">
-      <!-- Cartões serão inseridos aqui via JavaScript -->
-    </div>
-  </div>
-</div>
-
-<div id="ensinoMedio" class="content">
-  <h1 class="text-center my-4">Ensino Médio</h1>
-  <div class="container">
-    <div class="row g-4 justify-content-center" id="cardsContainerEM">
-      <!-- Cartões serão inseridos aqui via JavaScript -->
-    </div>
-  </div>
-</div>
-<!-- Categoria: Outros -->
-<div id="outros" class="content py-4">
-  <h1 class="text-center my-4">Outros</h1>
-  <div class="container">
-    <!-- IMPORTANTE: ESTA DIV É O GRID COM FLEXIBILIDADE RESPONSIVA -->
-    <div class="row g-4 justify-content-center" id="cardsContainerOutros">
-      <!-- Os cartões vão entrar aqui via JS -->
+    <div id="pagina-fundamental1" class="content cards-turmas-container">
+        <h1 class="text-center my-4">Fundamental I</h1>
+        <div class="container">
+            <div class="row g-4 justify-content-center" id="cardsContainerFund1">
+                </div>
+        </div>
     </div>
 
-    <div class="text-center mt-4">
-      <button id="btnCadastrarNovaCategoria" class="btn btn-primary">Cadastrar nova categoria</button>
+    <div id="pagina-fundamental2" class="content cards-turmas-container">
+        <h1 class="text-center my-4">Fundamental II</h1>
+        <div class="container">
+            <div class="row g-4 justify-content-center" id="cardsContainerFund2">
+                </div>
+        </div>
     </div>
-  </div>
-</div>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const anosEF1 = [
-      { nome: "1º", id: 1 },
-      { nome: "2º", id: 2 },
-      { nome: "3º", id: 3 },
-      { nome: "4º", id: 4 },
-      { nome: "5º", id: 5 }
-    ];
 
-    const anosFundamental2 = [
-      { nome: "6º", id: 6 },
-      { nome: "7º", id: 7 },
-      { nome: "8º", id: 8 },
-      { nome: "9º", id: 9 }
-    ];
+    <div id="pagina-ensinoMedio" class="content cards-turmas-container">
+        <h1 class="text-center my-4">Ensino Médio</h1>
+        <div class="container">
+            <div class="row g-4 justify-content-center" id="cardsContainerEM">
+                </div>
+        </div>
+    </div>
 
-    const anosEM = [
-      { nome: "1º EM", id: 10 },
-      { nome: "2º EM", id: 11 },
-      { nome: "3º EM", id: 12 }
-    ];
-
-    function criarCartoes(lista, containerId, sufixo = " ANO EF") {
-      const container = document.getElementById(containerId);
-      if (!container) {
-        console.error(`Container com id "${containerId}" não encontrado.`);
-        return;
-      }
-
-      container.innerHTML = "";
-
-      lista.forEach(ano => {
-        const col = document.createElement("div");
-        col.className = "col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2";
-
-        col.innerHTML = `
-          <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
-            <div class="card-body d-flex flex-column justify-content-between">
-              <h5 class="card-title text-danger">${ano.nome}${sufixo}</h5>
-              <hr class="border-danger" />
-              <div class="d-flex align-items-center justify-content-center mb-3">
-                <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
-                <span class="fs-4 fw-bold counter">32</span>
-                <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
-              </div>
-              <button class="btn btn-outline-danger w-100 mt-auto" onclick="confirmarContagem(this, '${ano.id}')">Confirmar</button>
+    <div id="pagina-outros" class="content cards-turmas-container">
+        <h1 class="text-center my-4">Outros</h1>
+        <div class="container">
+            <div class="row g-4 justify-content-center" id="cardsContainerOutros">
+                </div>
+            <div class="text-center mt-4">
+                <button id="btnCadastrarNovaCategoriaOutros" class="btn btn-primary">Cadastrar Nova Turma em Outros</button>
             </div>
-          </div>
-        `;
+        </div>
+    </div>
 
-        container.appendChild(col);
-      });
-    }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Bloco de Script Principal
+        const urlsBackend = {
+            postContagens: "../backend/endpoints/post_contagens.php",
+            getContagensDia: "../backend/endpoints/contagens_dia.php",
+            getTurmasOutros: "../backend/endpoints/turmas.php?categoria=5" // Categoria 5 para "Outros"
+        };
 
-    // Criar cartões para as três categorias fixas
-    criarCartoes(anosEF1, "cardsContainer1");
-    criarCartoes(anosFundamental2, "cardsContainer2");
-    criarCartoes(anosEM, "cardsContainerEM", "");
-
-    // Buscar e renderizar os dados da categoria "Outros"
-    fetch("../backend/endpoints/turmas.php")
-      .then(res => {
-        if (!res.ok) throw new Error("Erro na resposta da requisição.");
-        return res.json();
-      })
-      .then(data => {
-        const outros = data.filter(t => parseInt(t.id_turma, 10) > 12);
-        const formatados = outros.map(t => ({ nome: t.nome_turma, id: t.id_turma }));
-        criarCartoes(formatados, "cardsContainerOutros", "");
-      })
-      .catch(error => {
-        console.error("Erro ao buscar dados da categoria 'Outros':", error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Erro ao carregar categorias',
-          text: 'Não foi possível carregar as categorias "Outros". Tente novamente mais tarde.'
-        });
-      });
-  }); // <-- Aqui fechamos o DOMContentLoaded corretamente
-
-  // Funções globais
-  window.changeCount = function(button, delta) {
-    const counter = button.parentElement.querySelector(".counter");
-    let value = parseInt(counter.textContent, 10);
-    value = Math.max(0, value + delta);
-    counter.textContent = value;
-  };
-
-  window.confirmarContagem = function(button, turmaId) {
-    const cardBody = button.closest('.card-body');
-    const counterValue = parseInt(cardBody.querySelector(".counter").textContent, 10);
-
-    const dados = {
-      qtd_contagem: counterValue,
-      turmas_id_turma: turmaId
-    };
-
-    fetch("../backend/endpoints/post_contagens.php", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados)
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Contagem salva!',
-          text: 'Os dados foram registrados com sucesso.'
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Erro ao salvar',
-          text: data.error || "Erro desconhecido"
-        });
-      }
-    })
-    .catch(error => {
-      console.error("Erro na requisição:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Erro ao enviar contagem',
-        text: 'Tente novamente mais tarde.'
-      });
-    });
-  };
-</script>
-
-
-
-
-
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<script>
-  // Função para trocar de página
-  function showPage(pageId) {
-    document.querySelectorAll('.content').forEach(page => {
-      page.style.display = 'none';
-      page.style.opacity = 0;
-    });
-    const targetPage = document.getElementById(pageId);
-    targetPage.style.display = 'flex';
-    setTimeout(() => {
-      targetPage.style.opacity = 1;
-    }, 50);
-
-    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-      link.classList.remove('active');
-    });
-    const activeLink = document.querySelector(`.sidebar .nav-link[onclick="showPage('${pageId}')"]`);
-    if (activeLink && !activeLink.classList.contains('dropdown-toggle')) {
-      activeLink.classList.add('active');
-    } else if (activeLink && activeLink.classList.contains('dropdown-toggle')) {
-      activeLink.classList.add('active');
-    }
-    document.querySelectorAll('.sidebar .dropdown-item').forEach(item => {
-      item.classList.remove('active');
-      if (item.getAttribute('onclick') === `showPage('${pageId}')`) {
-        item.classList.add('active');
-      }
-    });
-  }
-
-  // Atualiza a data
-  const dataHoje = new Date().toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  });
-  const dataAtualElement = document.querySelector('#home .info-container p:first-child');
-  if (dataAtualElement) {
-    dataAtualElement.textContent = `Data: ${dataHoje}`;
-  }
-
-  // Contador (+/-)
-  function changeCount(button, delta) {
-    const span = button.parentElement.querySelector('.counter');
-    let value = parseInt(span.textContent);
-    value = Math.max(0, value + delta);
-    span.textContent = value;
-  }
-
-  document.addEventListener('DOMContentLoaded', function () {
-    // Exibe a página padrão
-    showPage('contagem');
-
-    // Menu toggle e overlay
-    const toggleButton = document.querySelector('.menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    const overlay = document.createElement('div');
-    overlay.className = 'overlay';
-    document.body.appendChild(overlay);
-
-    toggleButton.addEventListener('click', () => {
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-    });
-
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('active');
-      overlay.classList.remove('active');
-    });
-
-    // Busca dados do backend
-    fetch("../backend/endpoints/contagens_dia.php")
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        console.log("Dados recebidos:", data);
-
-        if (data.error) {
-          console.error("Erro retornado do servidor:", data.error);
-          if (data.message) console.error("Detalhes:", data.message);
-          return;
+        /**
+         * Exibe alertas usando SweetAlert2.
+         * @param {string} icon - Ícone do alerta ('success', 'error', 'warning', 'info', 'question').
+         * @param {string} title - Título do alerta.
+         * @param {string} text - Texto do alerta.
+         */
+        function exibirAlerta(icon, title, text) {
+            Swal.fire({ icon, title, text });
         }
 
-        if (Array.isArray(data)) {
-          data.forEach(item => {
-            const categoria = item.categoria;
-            const soma = item.soma;
+        /**
+         * Altera o valor do contador no card.
+         * @param {HTMLElement} button - O botão clicado (+ ou -).
+         * @param {number} delta - O valor a ser adicionado ou subtraído.
+         */
+        function alterarContadorCard(button, delta) {
+            const counterElement = button.parentElement.querySelector(".counter");
+            if (!counterElement) return;
+            let currentValue = parseInt(counterElement.textContent, 10);
+            currentValue = Math.max(0, currentValue + delta); // Não permite valores negativos
+            counterElement.textContent = currentValue;
+        }
+        window.alterarContadorCard = alterarContadorCard; // Expor globalmente se chamado por HTML inline
 
-            const id = categoria.toLowerCase();
-            const el = document.getElementById(id);
-            if (el) {
-              el.textContent = soma;
-            } else {
-              console.warn(`Elemento com id "${id}" não encontrado.`);
+        /**
+         * Envia a contagem para o backend.
+         * @param {HTMLElement} button - O botão de confirmação clicado.
+         * @param {string|number} turmaId - O ID da turma.
+         */
+        async function confirmarContagem(button, turmaId) {
+            const cardBody = button.closest('.card-body');
+            if (!cardBody) return;
+            const counterValue = parseInt(cardBody.querySelector(".counter").textContent, 10);
+
+            const dadosContagem = {
+                qtd_contagem: counterValue,
+                turmas_id_turma: turmaId
+            };
+
+            try {
+                const response = await fetch(urlsBackend.postContagens, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(dadosContagem)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    exibirAlerta('success', 'Contagem salva!', 'Os dados foram registrados com sucesso.');
+                } else {
+                    exibirAlerta('error', 'Erro ao salvar', data.error || "Erro desconhecido ao salvar contagem.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição de confirmação de contagem:", error);
+                exibirAlerta('error', 'Erro de comunicação', 'Não foi possível enviar a contagem. Tente novamente.');
             }
-          });
-        } else {
-          console.error("Formato inesperado dos dados:", data);
         }
-      })
-      .catch(error => {
-        console.error("Erro ao buscar dados:", error);
-      });
-  });
-</script>
-</body>
+        window.confirmarContagem = confirmarContagem; // Expor globalmente
 
+        /**
+         * Cria e adiciona os cards de turmas a um container.
+         * @param {Array<Object>} listaTurmas - Array de objetos, cada um com 'nome' e 'id' da turma.
+         * @param {string} containerId - ID do elemento container onde os cards serão inseridos.
+         * @param {string} [sufixoNome=""] - Sufixo a ser adicionado ao nome da turma no card.
+         * @param {boolean} [estiloPersonalizadoOutros=false] - Aplica estilo especial para a categoria "Outros".
+         */
+        function criarCardsTurma(listaTurmas, containerId, sufixoNome = "", estiloPersonalizadoOutros = false) {
+            const container = document.getElementById(containerId);
+            if (!container) {
+                console.error(`Container com id "${containerId}" não encontrado.`);
+                return;
+            }
+            container.innerHTML = ""; // Limpa o container antes de adicionar novos cards
+
+            listaTurmas.forEach(turma => {
+                const col = document.createElement("div");
+                col.className = "col-12 col-sm-6 col-md-4 col-lg-3 col-xl-3 mb-4"; // Ajustado para melhor responsividade
+
+                const cardClasses = estiloPersonalizadoOutros ?
+                    "card text-center h-100 shadow-sm rounded-4 card-outros-personalizado" :
+                    "card text-center border-danger h-100 shadow-sm rounded-4";
+                
+                const nomeExibicao = estiloPersonalizadoOutros ? turma.nome : `${turma.nome}${sufixoNome}`;
+                const tituloClasses = estiloPersonalizadoOutros ? "card-title" : "card-title text-danger";
+                const hrClasses = estiloPersonalizadoOutros ? "border-white" : "border-danger";
+                const btnCounterClasses = estiloPersonalizadoOutros ? "btn btn-light text-danger rounded-circle me-2 btn-counter" : "btn btn-outline-danger rounded-circle me-2 btn-counter";
+                const btnConfirmarClasses = estiloPersonalizadoOutros ? "btn btn-light text-danger fw-bold w-100 mt-auto btn-confirmar" : "btn btn-outline-danger w-100 mt-auto btn-confirmar";
+
+                col.innerHTML = `
+                    <div class="${cardClasses}">
+                        <div class="card-body d-flex flex-column justify-content-between p-3">
+                            <h5 class="${tituloClasses}">${nomeExibicao}</h5>
+                            <hr class="${hrClasses} my-2" />
+                            <div class="d-flex align-items-center justify-content-center my-3">
+                                <button class="${btnCounterClasses}" onclick="alterarContadorCard(this, -1)">−</button>
+                                <span class="fs-4 fw-bold counter mx-2">0</span>
+                                <button class="${btnCounterClasses.replace('me-2', 'ms-2')}" onclick="alterarContadorCard(this, 1)">+</button>
+                            </div>
+                            <button class="${btnConfirmarClasses}" onclick="confirmarContagem(this, '${turma.id}')">Confirmar</button>
+                        </div>
+                    </div>`;
+                container.appendChild(col);
+            });
+        }
+
+        /**
+         * Carrega e renderiza as turmas da categoria "Outros".
+         */
+        async function carregarTurmasOutros() {
+            try {
+                const response = await fetch(urlsBackend.getTurmasOutros);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                const data = await response.json();
+                const turmasFormatadas = data.map(t => ({ nome: t.nome_turma, id: t.id_turma }));
+                criarCardsTurma(turmasFormatadas, "cardsContainerOutros", "", true);
+            } catch (error) {
+                console.error("Erro ao buscar dados da categoria 'Outros':", error);
+                exibirAlerta('error', 'Erro ao carregar "Outros"', 'Não foi possível carregar as turmas da categoria "Outros".');
+                const container = document.getElementById("cardsContainerOutros");
+                if(container) container.innerHTML = '<p class="text-danger text-center">Falha ao carregar turmas.</p>';
+            }
+        }
+        
+        /**
+         * Carrega os dados de contagem do dia e atualiza o dashboard.
+         */
+        async function carregarDadosContagemDashboard() {
+            try {
+                const response = await fetch(urlsBackend.getContagensDia);
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                const data = await response.json();
+
+                if (data.error) {
+                    console.error("Erro retornado do servidor (contagens_dia):", data.error, data.message || "");
+                    exibirAlerta('error', 'Erro de Dados', 'Não foi possível carregar os totais das contagens.');
+                    return;
+                }
+
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        // Mapeia o nome da categoria para o ID do elemento no HTML
+                        let elementId = '';
+                        const categoriaLower = item.categoria.toLowerCase();
+                        if (categoriaLower.includes('fundamental1c')) elementId = 'contagem-fundamental-i';
+                        else if (categoriaLower.includes('fundamental2c')) elementId = 'contagem-fundamental-ii';
+                        else if (categoriaLower.includes('Medio') || categoriaLower.includes('medio')) elementId = 'contagem-ensino-medio';
+                        else if (categoriaLower.includes('outros')) elementId = 'contagem-outros-geral';
+                        // Adicione mais mapeamentos se necessário
+
+                        const el = document.getElementById(elementId);
+                        if (el) {
+                            el.textContent = item.soma || 0;
+                        } else {
+                            console.warn(`Elemento com ID "${elementId}" (mapeado de "${item.categoria}") não encontrado no dashboard de contagem.`);
+                        }
+                    });
+                } else {
+                    console.error("Formato inesperado dos dados de contagem:", data);
+                }
+            } catch (error) {
+                console.error("Erro ao buscar dados de contagem do dia:", error);
+                exibirAlerta('error', 'Erro de Comunicação', 'Falha ao buscar os totais das contagens.');
+            }
+        }
+
+        /**
+         * Exibe a página solicitada e oculta as demais.
+         * @param {string} pageIdToShow - ID da página a ser exibida.
+         */
+        function exibirPagina(pageIdToShow) {
+            document.querySelectorAll('.content').forEach(page => {
+                page.classList.remove('active');
+            });
+            const targetPage = document.getElementById(pageIdToShow);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Atualiza links ativos na sidebar
+            document.querySelectorAll('.sidebar .nav-link, .sidebar .dropdown-item').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageIdToShow) {
+                    link.classList.add('active');
+                    // Se for um item de dropdown, ativa também o dropdown-toggle pai
+                    if (link.classList.contains('dropdown-item')) {
+                        const dropdownToggle = link.closest('.dropdown').querySelector('.dropdown-toggle');
+                        if (dropdownToggle) dropdownToggle.classList.add('active');
+                    }
+                }
+            });
+             // Fecha o menu mobile (se estiver aberto) ao trocar de página
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay-menu');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
+        /**
+         * Configura a navegação da página (links da sidebar).
+         */
+        function configurarNavegacao() {
+            document.querySelectorAll('.sidebar .nav-link[data-page], .sidebar .dropdown-item[data-page]').forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const pageId = this.dataset.page;
+                    if (pageId) {
+                        exibirPagina(pageId);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Atualiza a data na página Home.
+         */
+        function atualizarDataHome() {
+            const dataAtualElement = document.getElementById('data-atual-home');
+            if (dataAtualElement) {
+                const hoje = new Date();
+                dataAtualElement.textContent = `Data: ${hoje.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}`;
+            }
+        }
+        
+        /**
+         * Configura o menu hamburguer para dispositivos móveis.
+         */
+        function configurarMenuMobile() {
+            const menuToggleButton = document.querySelector('.menu-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            const overlay = document.querySelector('.overlay-menu');
+
+            if (menuToggleButton && sidebar && overlay) {
+                menuToggleButton.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    overlay.classList.toggle('active');
+                });
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    overlay.classList.remove('active');
+                });
+            }
+        }
+        
+        /**
+         * Função de inicialização principal da aplicação.
+         */
+        function inicializarAplicacao() {
+            configurarNavegacao();
+            configurarMenuMobile();
+            atualizarDataHome();
+
+            // Carrega os cards de turmas estáticos
+            criarCardsTurma([
+                { nome: "1º", id: 1 }, { nome: "2º", id: 2 }, { nome: "3º", id: 3 },
+                { nome: "4º", id: 4 }, { nome: "5º", id: 5 }
+            ], "cardsContainerFund1", " ANO EF");
+            criarCardsTurma([
+                { nome: "6º", id: 6 }, { nome: "7º", id: 7 },
+                { nome: "8º", id: 8 }, { nome: "9º", id: 9 }
+            ], "cardsContainerFund2", " ANO EF");
+            criarCardsTurma([
+                { nome: "1º", id: 10 }, { nome: "2º", id: 11 }, { nome: "3º", id: 12 }
+            ], "cardsContainerEM", " ANO EM");
+
+            // Carrega dinamicamente as turmas da categoria "Outros"
+            carregarTurmasOutros();
+            
+            // Carrega os dados do dashboard de contagem
+            carregarDadosContagemDashboard();
+
+            // Define a página inicial a ser exibida
+            exibirPagina('pagina-home'); // Ou 'pagina-contagem' se preferir
+
+            // Listener para o botão de cadastrar nova categoria (exemplo)
+            const btnCadastrarOutros = document.getElementById('btnCadastrarNovaCategoriaOutros');
+            if (btnCadastrarOutros) {
+                btnCadastrarOutros.addEventListener('click', () => {
+                    // Implementar lógica de cadastro aqui, por exemplo, abrir um modal com SweetAlert2
+                    Swal.fire({
+                        title: 'Cadastrar Nova Turma em Outros',
+                        html: `
+                            <input id="swal-input-nome-turma" class="swal2-input" placeholder="Nome da Turma">
+                            <input id="swal-input-id-turma" class="swal2-input" placeholder="ID da Turma (numérico)">
+                        `,
+                        confirmButtonText: 'Cadastrar',
+                        focusConfirm: false,
+                        preConfirm: () => {
+                            const nome = document.getElementById('swal-input-nome-turma').value;
+                            const id = document.getElementById('swal-input-id-turma').value;
+                            if (!nome || !id) {
+                                Swal.showValidationMessage(`Por favor, preencha nome e ID.`);
+                                return false;
+                            }
+                            if (isNaN(parseInt(id))) {
+                                Swal.showValidationMessage(`O ID da turma deve ser um número.`);
+                                return false;
+                            }
+                            return { nome: nome, id: parseInt(id) };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            // Aqui você faria o POST para o backend para salvar a nova turma
+                            // e depois recarregaria os cards da categoria "Outros"
+                            console.log("Nova turma a ser cadastrada:", result.value);
+                            exibirAlerta('info', 'Funcionalidade em desenvolvimento', `Cadastrar ${result.value.nome} (ID: ${result.value.id}). Lógica de backend pendente.`);
+                            // Exemplo: após salvar no backend, chamar carregarTurmasOutros();
+                        }
+                    });
+                });
+            }
+        }
+
+        // Inicializa a aplicação quando o DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', inicializarAplicacao);
+
+    </script>
+</body>
 </html>
