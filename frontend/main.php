@@ -3,7 +3,12 @@ session_start();
 require '../backend/config/db.php';
 
 $date = date('Y-m-d');
-$username = $_SESSION['nome_user368'];
+$nome = $_SESSION['nome_user368'];
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // Função para buscar a soma da contagem por categoria
 function buscarContagem($conn, $categoria, $data)
 {
@@ -20,11 +25,25 @@ function buscarContagem($conn, $categoria, $data)
     return $resultado['total'] ?? 0;
 }
 
+// Função para buscar turmas da categoria "Outros"
+function buscarTurmasOutros($conn)
+{
+    $sql = "SELECT * FROM turmas WHERE id_turma > 12";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Contagens por categoria
 $contagem1 = buscarContagem($conn, 1, $date) + buscarContagem($conn, 2, $date) + buscarContagem($conn, 3, $date);
 $contagem2 = buscarContagem($conn, 4, $date);
 $contagem3 = buscarContagem($conn, 5, $date);
-?>
 
+// Verifica se a categoria "outros" foi chamada
+if (isset($_GET['categoria']) && $_GET['categoria'] === 'outros') {
+    $turmasOutros = buscarTurmasOutros($conn);
+}
+?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -339,6 +358,9 @@ $contagem3 = buscarContagem($conn, 5, $date);
 
         
     </style>
+    <!-- SweetAlert2 (com Bootstrap 5 integrado) -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <header>
                 <button class="menu-toggle" aria-label="Abrir menu">
@@ -367,7 +389,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
                     Contagem</a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                <a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false">
                     <i class="bi bi-mortarboard-fill"></i> Nível de Ensino
                 </a>
@@ -424,17 +446,30 @@ $contagem3 = buscarContagem($conn, 5, $date);
     <h1 class="text-center mb-5 display-4 fw-light">Contagens</h1>
     <div class="row justify-content-center g-4">
 
-      <!-- Card 1 (85 - Fundamental I e II) -->
+    
       <div class="col-lg-3 col-md-6">
         <div class="card border-0 h-100 shadow" style="min-height: 250px;">
           <div class="card-body d-flex flex-column justify-content-center py-4">
-            <h2 id="fundamental" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
+            <h2 id="fundamental1c" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
             <hr class="w-50 mx-auto">
             <div class="text-center mt-3">
               <p class="mb-2">
                 <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental I
               </p>
-              <p class="mb-0">
+  
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col-lg-3 col-md-6">
+        <div class="card border-0 h-100 shadow" style="min-height: 250px;">
+          <div class="card-body d-flex flex-column justify-content-center py-4">
+            <h2 id="fundamental2c" class="text-center display-3 fw-bold text-dark mb-4">-</h2>
+            <hr class="w-50 mx-auto">
+            <div class="text-center mt-3">
+            <p class="mb-0">
                 <i class="bi bi-mortarboard-fill me-2 text-muted"></i> Fundamental II
               </p>
             </div>
@@ -442,7 +477,6 @@ $contagem3 = buscarContagem($conn, 5, $date);
         </div>
       </div>
 
-      <!-- Card 2 (75 - Ensino Médio) -->
       <div class="col-lg-3 col-md-6">
         <div class="card border-0 h-100 shadow" style="min-height: 250px;">
           <div class="card-body d-flex flex-column justify-content-center py-4">
@@ -457,7 +491,7 @@ $contagem3 = buscarContagem($conn, 5, $date);
         </div>
       </div>
 
-      <!-- Card 3 (49 - Outros) -->
+
       <div class="col-lg-3 col-md-6">
         <div class="card border-0 h-100 shadow" style="min-height: 250px;">
           <div class="card-body d-flex flex-column justify-content-center py-4">
@@ -500,54 +534,18 @@ $contagem3 = buscarContagem($conn, 5, $date);
         </div>
     </div>
 </div> <!-- FECHAMENTO CORRETO da div #usuario -->
-
 <!-- A PARTIR DAQUI ESTÁ FORA DA DIV #usuario -->
-
 <div id="fundamental1" class="content">
-    <h1>Fundamental I</h1>
-
-    <div class="container">
-        <div class="row g-4 justify-content-center" id="cardsContainer1">
-            <!-- Cartões serão inseridos aqui via JavaScript -->
-        </div>
+  <h1>Fundamental I</h1>
+  <div class="container">
+    <div class="row g-4 justify-content-center" id="cardsContainer1">
+      <!-- Cartões serão inseridos aqui via JavaScript -->
     </div>
+  </div>
 </div>
 
-<script>
-  const anos = ["1°", "2°", "3°", "4°", "5°"];
-  const container = document.getElementById("cardsContainer1");
-
-  anos.forEach(ano => {
-    const card = document.createElement("div");
-    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
-    card.innerHTML = `
-      <div class="card text-center border-danger">
-        <div class="card-body">
-          <h5 class="card-title text-danger">${ano} ANO EF</h5>
-          <hr class="border-danger" />
-          <div class="d-flex align-items-center justify-content-center mb-3">
-            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
-            <span class="fs-4 fw-bold counter">32</span>
-            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
-          </div>
-          <button class="btn btn-outline-danger w-100">Confirmar</button>
-        </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  function changeCount(button, delta) {
-    const counter = button.parentElement.querySelector(".counter");
-    let value = parseInt(counter.textContent, 10);
-    value = Math.max(0, value + delta); // impede valor negativo
-    counter.textContent = value;
-  }
-</script>
-<!-- ____________________________________________ -->
-    <div id="fundamental2" class="content">
+<div id="fundamental2" class="content">
   <h1 class="text-center my-4">Fundamental II</h1>
-  
   <div class="container">
     <div class="row g-4 justify-content-center" id="cardsContainer2">
       <!-- Cartões serão inseridos aqui via JavaScript -->
@@ -555,128 +553,163 @@ $contagem3 = buscarContagem($conn, 5, $date);
   </div>
 </div>
 
-<script>
-  const anosFundamental2 = ["6°", "7°", "8°", "9°"];
-  const container2 = document.getElementById("cardsContainer2");
-
-  anosFundamental2.forEach(ano => {
-    const card = document.createElement("div");
-    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
-    card.innerHTML = `
-      <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title text-danger">${ano} ANO EF</h5>
-          <hr class="border-danger" />
-          <div class="d-flex align-items-center justify-content-center mb-3">
-            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
-            <span class="fs-4 fw-bold counter">32</span>
-            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
-          </div>
-          <button class="btn btn-outline-danger w-100 mt-auto">Confirmar</button>
-        </div>
-      </div>
-    `;
-    container2.appendChild(card);
-  });
-
-  function changeCount(button, delta) {
-    const counter = button.parentElement.querySelector(".counter");
-    let value = parseInt(counter.textContent, 10);
-    value = Math.max(0, value + delta); // impede valor negativo
-    counter.textContent = value;
-  }
-</script>
-
-    </div>
 <div id="ensinoMedio" class="content">
   <h1 class="text-center my-4">Ensino Médio</h1>
-  
   <div class="container">
     <div class="row g-4 justify-content-center" id="cardsContainerEM">
       <!-- Cartões serão inseridos aqui via JavaScript -->
     </div>
   </div>
 </div>
-
-<script>
-  const anosEM = ["1° EM", "2° EM", "3° EM"];
-  const containerEM = document.getElementById("cardsContainerEM");
-
-  anosEM.forEach(ano => {
-    const card = document.createElement("div");
-    card.className = "col-12 col-sm-6 col-md-4 col-lg-2";
-    card.innerHTML = `
-      <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <h5 class="card-title text-danger">${ano}</h5>
-          <hr class="border-danger" />
-          <div class="d-flex align-items-center justify-content-center mb-3">
-            <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
-            <span class="fs-4 fw-bold counter">32</span>
-            <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
-          </div>
-          <button class="btn btn-outline-danger w-100 mt-auto">Confirmar</button>
-        </div>
-      </div>
-    `;
-    containerEM.appendChild(card);
-  });
-
-  function changeCount(button, delta) {
-    const counter = button.parentElement.querySelector(".counter");
-    let value = parseInt(counter.textContent, 10);
-    value = Math.max(0, value + delta); // impede valor negativo
-    counter.textContent = value;
-  }
-</script>
-
+<!-- Categoria: Outros -->
 <div id="outros" class="content py-4">
-  <div class="container text-center">
-    <!-- Título -->
-    <h1 class="mb-1 text-danger">Outros</h1>
-    <hr class="mx-auto mb-4 border-danger" style="width: 200px; border-width: 2px;">
+  <h1 class="text-center my-4">Outros</h1>
+  <div class="container">
+    <!-- IMPORTANTE: ESTA DIV É O GRID COM FLEXIBILIDADE RESPONSIVA -->
+    <div class="row g-4 justify-content-center" id="cardsContainerOutros">
+      <!-- Os cartões vão entrar aqui via JS -->
+    </div>
 
-    <!-- Grade de botões em 3 colunas -->
-    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-      <div class="col">
-        <a href="senai.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> SENAI
-        </a>
-      </div>
-      <div class="col">
-        <a href="personaliza.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Personaliza
-        </a>
-      </div>
-      <div class="col">
-        <a href="topico-avancado.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Tópico Avançado
-        </a>
-      </div>
-      <div class="col">
-        <a href="autorizados.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Autorizados
-        </a>
-      </div>
-      <div class="col">
-        <a href="para-gabaritar.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Para Gabaritar
-        </a>
-      </div>
-      <div class="col">
-        <a href="robotica.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Robótica
-        </a>
-      </div>
-      <!-- Botão Cadastrar ajustado -->
-      <div class="col">
-        <a href="Cadastrar.html" class="btn btn-danger w-100 py-3 fs-5 rounded-4 d-flex justify-content-center align-items-center">
-          <i class="bi bi-mortarboard-fill me-2"></i> Cadastrar
-        </a>
-      </div>
+    <div class="text-center mt-4">
+      <button id="btnCadastrarNovaCategoria" class="btn btn-primary">Cadastrar nova categoria</button>
     </div>
   </div>
 </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const anosEF1 = [
+      { nome: "1º", id: 1 },
+      { nome: "2º", id: 2 },
+      { nome: "3º", id: 3 },
+      { nome: "4º", id: 4 },
+      { nome: "5º", id: 5 }
+    ];
+
+    const anosFundamental2 = [
+      { nome: "6º", id: 6 },
+      { nome: "7º", id: 7 },
+      { nome: "8º", id: 8 },
+      { nome: "9º", id: 9 }
+    ];
+
+    const anosEM = [
+      { nome: "1º EM", id: 10 },
+      { nome: "2º EM", id: 11 },
+      { nome: "3º EM", id: 12 }
+    ];
+
+    function criarCartoes(lista, containerId, sufixo = " ANO EF") {
+      const container = document.getElementById(containerId);
+      if (!container) {
+        console.error(`Container com id "${containerId}" não encontrado.`);
+        return;
+      }
+
+      container.innerHTML = "";
+
+      lista.forEach(ano => {
+        const col = document.createElement("div");
+        col.className = "col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2";
+
+        col.innerHTML = `
+          <div class="card text-center border border-danger h-100 shadow-sm rounded-4">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <h5 class="card-title text-danger">${ano.nome}${sufixo}</h5>
+              <hr class="border-danger" />
+              <div class="d-flex align-items-center justify-content-center mb-3">
+                <button class="btn btn-outline-danger rounded-circle me-2" onclick="changeCount(this, -1)">−</button>
+                <span class="fs-4 fw-bold counter">32</span>
+                <button class="btn btn-outline-danger rounded-circle ms-2" onclick="changeCount(this, 1)">+</button>
+              </div>
+              <button class="btn btn-outline-danger w-100 mt-auto" onclick="confirmarContagem(this, '${ano.id}')">Confirmar</button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(col);
+      });
+    }
+
+    // Criar cartões para as três categorias fixas
+    criarCartoes(anosEF1, "cardsContainer1");
+    criarCartoes(anosFundamental2, "cardsContainer2");
+    criarCartoes(anosEM, "cardsContainerEM", "");
+
+    // Buscar e renderizar os dados da categoria "Outros"
+    fetch("../backend/endpoints/turmas.php")
+      .then(res => {
+        if (!res.ok) throw new Error("Erro na resposta da requisição.");
+        return res.json();
+      })
+      .then(data => {
+        const outros = data.filter(t => parseInt(t.id_turma, 10) > 12);
+        const formatados = outros.map(t => ({ nome: t.nome_turma, id: t.id_turma }));
+        criarCartoes(formatados, "cardsContainerOutros", "");
+      })
+      .catch(error => {
+        console.error("Erro ao buscar dados da categoria 'Outros':", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao carregar categorias',
+          text: 'Não foi possível carregar as categorias "Outros". Tente novamente mais tarde.'
+        });
+      });
+  }); // <-- Aqui fechamos o DOMContentLoaded corretamente
+
+  // Funções globais
+  window.changeCount = function(button, delta) {
+    const counter = button.parentElement.querySelector(".counter");
+    let value = parseInt(counter.textContent, 10);
+    value = Math.max(0, value + delta);
+    counter.textContent = value;
+  };
+
+  window.confirmarContagem = function(button, turmaId) {
+    const cardBody = button.closest('.card-body');
+    const counterValue = parseInt(cardBody.querySelector(".counter").textContent, 10);
+
+    const dados = {
+      qtd_contagem: counterValue,
+      turmas_id_turma: turmaId
+    };
+
+    fetch("../backend/endpoints/post_contagens.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Contagem salva!',
+          text: 'Os dados foram registrados com sucesso.'
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao salvar',
+          text: data.error || "Erro desconhecido"
+        });
+      }
+    })
+    .catch(error => {
+      console.error("Erro na requisição:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erro ao enviar contagem',
+        text: 'Tente novamente mais tarde.'
+      });
+    });
+  };
+</script>
+
+
+
+
+
 
 
 
@@ -790,9 +823,6 @@ $contagem3 = buscarContagem($conn, 5, $date);
       });
   });
 </script>
-
-
-
 </body>
 
 </html>

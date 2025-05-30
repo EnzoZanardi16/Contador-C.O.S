@@ -9,7 +9,8 @@ try {
     $stmt = $conn->prepare("
 SELECT 
     CASE 
-        WHEN turmas.id_turma IN (1,2,3,4,5,6,7,8) THEN 'Fundamental'
+        WHEN turmas.id_turma IN (1,2,3,4,5) THEN 'fundamental1c'
+        WHEN turmas.id_turma IN (6,7,8,9) THEN 'fundamental2c'
         WHEN turmas.id_turma IN (10,11,12) THEN 'Medio'
         ELSE 'Outros'
     END AS categoria,
