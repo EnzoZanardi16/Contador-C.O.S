@@ -493,7 +493,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                             <h2 id="contagem-fundamental-i" class="display-6 fw-bold mb-0">-</h2>
                         </div>
                         <hr class="border-white opacity-50 w-75 my-2">
-                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center cursor-pointer"
+                             data-escopo="fundamental-i"
+                             onclick="abrirTabelaEscopo(this)">
                             <i class="bi bi-mortarboard-fill me-2"></i>Fundamental I
                         </div>
                     </div>
@@ -508,7 +510,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                             <h2 id="contagem-fundamental-ii" class="display-6 fw-bold mb-0">-</h2>
                         </div>
                         <hr class="border-white opacity-50 w-75 my-2">
-                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center cursor-pointer"
+                             data-escopo="fundamental-ii"
+                             onclick="abrirTabelaEscopo(this)">
                             <i class="bi bi-mortarboard-fill me-2"></i>Fundamental II
                         </div>
                     </div>
@@ -523,7 +527,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                             <h2 id="contagem-ensino-medio" class="display-6 fw-bold mb-0">-</h2>
                         </div>
                         <hr class="border-white opacity-50 w-75 my-2">
-                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center cursor-pointer"
+                             data-escopo="ensino-medio"
+                             onclick="abrirTabelaEscopo(this)">
                             <i class="bi bi-journal-bookmark-fill me-2"></i>Ensino Médio
                         </div>
                     </div>
@@ -538,7 +544,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                             <h2 id="contagem-outros-geral" class="display-6 fw-bold mb-0">-</h2>
                         </div>
                         <hr class="border-white opacity-50 w-75 my-2">
-                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center cursor-pointer"
+                             data-escopo="outros"
+                             onclick="abrirTabelaEscopo(this)">
                             <i class="bi bi-three-dots me-2"></i>Outros
                         </div>
                     </div>
@@ -866,92 +874,162 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         /**
          * Função de inicialização principal da aplicação.
          */
-        function inicializarAplicacao() {
-            configurarNavegacao();
-            configurarMenuMobile();
-            atualizarDataHome();
+        // Ajuste do script completo para funcionar com os dados do endpoint e exibir tabela corretamente
 
-            // Carrega os cards de turmas estáticos
-            criarCardsTurma([
-                { nome: "1º", id: 1 }, { nome: "2º", id: 2 }, { nome: "3º", id: 3 },
-                { nome: "4º", id: 4 }, { nome: "5º", id: 5 }
-            ], "cardsContainerFund1", " ANO EF");
-            criarCardsTurma([
-                { nome: "6º", id: 6 }, { nome: "7º", id: 7 },
-                { nome: "8º", id: 8 }, { nome: "9º", id: 9 }
-            ], "cardsContainerFund2", " ANO EF");
-            criarCardsTurma([
-                { nome: "1º", id: 10 }, { nome: "2º", id: 11 }, { nome: "3º", id: 12 }
-            ], "cardsContainerEM", " ANO EM");
+// Ajuste do script completo para funcionar com os dados do endpoint e exibir tabela corretamente
 
-            // Carrega dinamicamente as turmas da categoria "Outros"
-            carregarTurmasOutros();
-            
-            // Carrega os dados do dashboard de contagem
-            carregarDadosContagemDashboard();
+// Ajuste do script completo para funcionar com os dados do endpoint contagens.php
 
-            // Define a página inicial a ser exibida
-            exibirPagina('pagina-contagem'); // Ou 'pagina-contagem' se preferir
+function inicializarAplicacao() {
+    configurarNavegacao();
+    configurarMenuMobile();
+    atualizarDataHome();
 
-            // Listener para o botão de cadastrar nova categoria (exemplo)
-const btnCadastrarOutros = document.getElementById('btnCadastrarNovaCategoriaOutros');
-if (btnCadastrarOutros) {
-    btnCadastrarOutros.addEventListener('click', () => {
-        Swal.fire({
-            title: 'Cadastrar Nova Turma',
-            html: `
-                <input id="swal-input-nome-turma" class="swal2-input" placeholder="Nome da Turma">
-            `,
-            confirmButtonText: 'Cadastrar',
-            focusConfirm: false,
-            preConfirm: () => {
-                const nome = document.getElementById('swal-input-nome-turma').value;
-                const categoriaId = 5; // Valor padrão fixo
+    criarCardsTurma([
+        { nome: "1º", id: 1 }, { nome: "2º", id: 2 }, { nome: "3º", id: 3 },
+        { nome: "4º", id: 4 }, { nome: "5º", id: 5 }
+    ], "cardsContainerFund1", " ANO EF");
+    criarCardsTurma([
+        { nome: "6º", id: 6 }, { nome: "7º", id: 7 },
+        { nome: "8º", id: 8 }, { nome: "9º", id: 9 }
+    ], "cardsContainerFund2", " ANO EF");
+    criarCardsTurma([
+        { nome: "1º", id: 10 }, { nome: "2º", id: 11 }, { nome: "3º", id: 12 }
+    ], "cardsContainerEM", " ANO EM");
 
-                if (!nome) {
-                    Swal.showValidationMessage(`Por favor, preencha o nome da turma.`);
-                    return false;
-                }
+    carregarTurmasOutros();
+    carregarDadosContagemDashboard();
+    exibirPagina('pagina-contagem');
 
-                return {
-                    nome_turma: nome,
-                    categorias_id_categoria: categoriaId
-                };
-            }
-        }).then((result) => {
-            if (result.isConfirmed && result.value) {
-                fetch('../backend/endpoints/post_turma.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(result.value)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Resposta do backend:", data);
-                    if (data.success) {
-                        exibirAlerta('success', 'Turma cadastrada com sucesso!', `Nome: ${result.value.nome_turma}`);
-                        carregarTurmasOutros(); // Atualiza lista após inserção
-                    } else {
-                        exibirAlerta('error', 'Erro ao cadastrar turma', data.message || data.error);
+    const btnCadastrarOutros = document.getElementById('btnCadastrarNovaCategoriaOutros');
+    if (btnCadastrarOutros) {
+        btnCadastrarOutros.addEventListener('click', () => {
+            Swal.fire({
+                title: 'Cadastrar Nova Turma',
+                html: `
+                    <input id="swal-input-nome-turma" class="swal2-input" placeholder="Nome da Turma">
+                `,
+                confirmButtonText: 'Cadastrar',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const nome = document.getElementById('swal-input-nome-turma').value;
+                    const categoriaId = 5;
+
+                    if (!nome) {
+                        Swal.showValidationMessage(`Por favor, preencha o nome da turma.`);
+                        return false;
                     }
-                })
-                .catch(error => {
-                    console.error('Erro na requisição:', error);
-                    exibirAlerta('error', 'Erro inesperado', 'Não foi possível cadastrar a turma.');
-                });
-            }
+
+                    return {
+                        nome_turma: nome,
+                        categorias_id_categoria: categoriaId
+                    };
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    fetch('../backend/endpoints/post_turma.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(result.value)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            exibirAlerta('success', 'Turma cadastrada com sucesso!', `Nome: ${result.value.nome_turma}`);
+                            carregarTurmasOutros();
+                        } else {
+                            exibirAlerta('error', 'Erro ao cadastrar turma', data.message || data.error);
+                        }
+                    })
+                    .catch(error => {
+                        exibirAlerta('error', 'Erro inesperado', 'Não foi possível cadastrar a turma.');
+                    });
+                }
+            });
         });
-    });
+    }
+
+
+}
+
+
+// Função que abre a tabela, recebendo o elemento clicado
+function abrirTabelaEscopo(elemento) {
+    const escopo = elemento.getAttribute('data-escopo');
+
+    // Mapeia o nome usado no HTML para os nomes reais do banco
+    const categoriasMapeadas = {
+        "fundamental-i": ["Fundamental 1 A", "Fundamental 1 B"],
+        "fundamental-ii": ["Fundamental 2"],
+        "ensino-medio": ["Ensino Médio"],
+        "outros": ["Outros"]
+    };
+
+    const categoriasAlvo = categoriasMapeadas[escopo];
+    if (!categoriasAlvo) {
+        Swal.fire("Erro", "Categoria inválida", "error");
+        return;
+    }
+
+    fetch('../backend/endpoints/contagens_completa.php')
+        .then(res => {
+            if (!res.ok) throw new Error(`Erro na resposta: ${res.status}`);
+            return res.json();
+        })
+        .then(dados => {
+            const hoje = new Date().toISOString().split('T')[0];
+
+            const filtrados = dados.filter(item => {
+                const dataItem = item.data_contagem.split('T')[0];
+                return dataItem === hoje && categoriasAlvo.includes(item.nome_categoria);
+            });
+
+            if (filtrados.length === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sem dados',
+                    text: `Nenhum dado encontrado para a categoria "${escopo}" na data de hoje.`,
+                });
+                return;
+            }
+
+            let tabelaHTML = `
+                <table class="table table-bordered">
+                    <thead><tr><th>Turma</th><th>Contagem</th></tr></thead>
+                    <tbody>
+                        ${filtrados.map(item => `
+                            <tr><td>${item.nome_turma}</td><td>${item.qtd_contagem}</td></tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            Swal.fire({
+                title: `Contagem de ${escopo.replace('-', ' ').toUpperCase()}`,
+                html: tabelaHTML,
+                width: 600
+            });
+        })
+        .catch(err => {
+            console.error('Erro no fetch:', err);
+            Swal.fire('Erro', 'Não foi possível carregar os dados', 'error');
+        });
 }
 
 
 
+// Código para adicionar os event listeners após o DOM estar carregado
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-escopo]').forEach(botao => {
+        botao.addEventListener('click', () => {
+            abrirTabelaEscopo(botao); // passa o elemento clicado
+        });
+    });
+});
 
 
-
-        }
 
         // Inicializa a aplicação quando o DOM estiver pronto
         document.addEventListener('DOMContentLoaded', inicializarAplicacao);
