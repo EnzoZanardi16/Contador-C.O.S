@@ -58,7 +58,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
 
         .sidebar {
             width: 280px;
-            background-color: #b32424;
+            background-color: #BB2A2A;
             color: white;
             padding: 20px;
             flex-shrink: 0;
@@ -125,7 +125,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         }
 
         .sidebar .dropdown-menu {
-            background-color: #c73838; /* Tom mais claro do vermelho da sidebar */
+            background-color: #BB2A2A; /* Tom mais claro do vermelho da sidebar */
             border: none;
             padding: 0;
             margin-top: 0;
@@ -211,7 +211,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         }
 
         .contact-item i {
-            color: #b32424;
+            color:#BB2A2A;
             margin-right: 12px; /* Aumentado */
             font-size: 1.5em; /* Ajustado */
         }
@@ -226,14 +226,14 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
             display: contents; /* Para que o <a> não quebre o flex */
         }
          .contact-item a:hover span {
-             color: #b32424; /* Muda cor do texto no hover */
+             color: #BB2A2A; /* Muda cor do texto no hover */
          }
 
 
         .line-titulo {
             width: 150px; /* Ajustado */
             height: 3px; /* Ajustado */
-            background-color: #b32424; /* Cor principal */
+            background-color: #BB2A2A; /* Cor principal */
             margin-bottom: 30px;
             border-radius: 2px;
         }
@@ -267,7 +267,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         .cards-turmas-container .card-title {
             font-size: 1.1em;
             font-weight: bold;
-            color: #b32424;
+            color: #BB2A2A;
         }
         .cards-turmas-container .counter {
             font-size: 2em; /* Tamanho do contador */
@@ -284,7 +284,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
 
         /* Estilo para cards "Outros" personalizados */
         .cards-turmas-container .card.card-outros-personalizado {
-            background-color: #b32424; /* Cor principal */
+            background-color: #BB2A2A; /* Cor principal */
             color: white;
             border: none;
         }
@@ -300,13 +300,13 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         .cards-turmas-container .card.card-outros-personalizado .btn-counter,
         .cards-turmas-container .card.card-outros-personalizado .btn-confirmar {
             background-color: white;
-            color: #b32424;
+            color: #BB2A2A;
             border-color: white;
         }
          .cards-turmas-container .card.card-outros-personalizado .btn-counter:hover,
          .cards-turmas-container .card.card-outros-personalizado .btn-confirmar:hover {
             background-color: #f0f0f0;
-            color: #b32424;
+            color: #BB2A2A;
          }
 
 
@@ -337,7 +337,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
             top: 1rem;
             left: 1rem;
             z-index: 1101; /* Acima da sidebar */
-            background: #b32424; /* Cor de fundo */
+            background: #BB2A2A; /* Cor de fundo */
             color: white; /* Cor do ícone */
             border: none;
             cursor: pointer;
@@ -359,6 +359,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         }
         .overlay-menu.active {
             display: block;
+        }
+        .hover-darken:hover {
+            background-color: #e0e0e0 !important; /* cinza claro escuro */
         }
 
 
@@ -478,49 +481,73 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         </div>
     </div>
 
-    <div id="pagina-contagem" class="content">
-        <div class="container py-4">
-            <h1 class="text-center mb-5 display-5 fw-light">Contagens do Dia</h1>
-            <div class="row justify-content-center g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="card border-0 h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
-                            <h2 id="contagem-fundamental-i" class="display-3 fw-bold text-dark mb-3">-</h2>
-                            <hr class="w-50 mx-auto my-3">
-                            <p class="mb-0 text-muted"><i class="bi bi-pencil-fill me-2"></i>Fundamental I</p>
+<div id="pagina-contagem" class="content">
+    <div class="container py-4">
+        <h1 class="text-center mb-5 display-5 fw-bold text-black" style="text-decoration;">Contagens</h1>
+        <div class="row justify-content-center g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 bg-danger text-white rounded-4 border-0">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between py-4">
+                        <div class="bg-light text-danger rounded-4 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 100px; height: 100px;">
+                            <h2 id="contagem-fundamental-i" class="display-6 fw-bold mb-0">-</h2>
+                        </div>
+                        <hr class="border-white opacity-50 w-75 my-2">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                            <i class="bi bi-mortarboard-fill me-2"></i>Fundamental I
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card border-0 h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
-                            <h2 id="contagem-fundamental-ii" class="display-3 fw-bold text-dark mb-3">-</h2>
-                            <hr class="w-50 mx-auto my-3">
-                            <p class="mb-0 text-muted"><i class="bi bi-journal-bookmark-fill me-2"></i>Fundamental II</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 bg-danger text-white rounded-4 border-0">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between py-4">
+                        <div class="bg-light text-danger rounded-4 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 100px; height: 100px;">
+                            <h2 id="contagem-fundamental-ii" class="display-6 fw-bold mb-0">-</h2>
+                        </div>
+                        <hr class="border-white opacity-50 w-75 my-2">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                            <i class="bi bi-mortarboard-fill me-2"></i>Fundamental II
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card border-0 h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
-                            <h2 id="contagem-ensino-medio" class="display-3 fw-bold text-dark mb-3">-</h2>
-                            <hr class="w-50 mx-auto my-3">
-                            <p class="mb-0 text-muted"><i class="bi bi-book-fill me-2"></i>Ensino Médio</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 bg-danger text-white rounded-4 border-0">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between py-4">
+                        <div class="bg-light text-danger rounded-4 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 100px; height: 100px;">
+                            <h2 id="contagem-ensino-medio" class="display-6 fw-bold mb-0">-</h2>
+                        </div>
+                        <hr class="border-white opacity-50 w-75 my-2">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                            <i class="bi bi-journal-bookmark-fill me-2"></i>Ensino Médio
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card border-0 h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column justify-content-center py-4 text-center">
-                            <h2 id="contagem-outros-geral" class="display-3 fw-bold text-dark mb-3">-</h2>
-                            <hr class="w-50 mx-auto my-3">
-                            <p class="mb-0 text-muted"><i class="bi bi-three-dots me-2"></i>Outros</p>
+            </div>
+
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 bg-danger text-white rounded-4 border-0">
+                    <div class="card-body d-flex flex-column align-items-center justify-content-between py-4">
+                        <div class="bg-light text-danger rounded-4 d-flex align-items-center justify-content-center mb-3"
+                             style="width: 100px; height: 100px;">
+                            <h2 id="contagem-outros-geral" class="display-6 fw-bold mb-0">-</h2>
+                        </div>
+                        <hr class="border-white opacity-50 w-75 my-2">
+                        <div class="bg-light text-danger rounded-pill px-3 py-1 d-inline-flex align-items-center">
+                            <i class="bi bi-three-dots me-2"></i>Outros
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
 
     <div id="pagina-usuario" class="content">
         <div class="card-user-container">
@@ -569,7 +596,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
             <div class="row g-4 justify-content-center" id="cardsContainerOutros">
                 </div>
             <div class="text-center mt-4">
-                <button id="btnCadastrarNovaCategoriaOutros" class="btn btn-primary">Cadastrar Nova Turma em Outros</button>
+                <button id="btnCadastrarNovaCategoriaOutros" class="btn btn-danger">Cadastrar Nova Turma em Outros</button>
             </div>
         </div>
     </div>
@@ -672,18 +699,26 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 const btnConfirmarClasses = estiloPersonalizadoOutros ? "btn btn-light text-danger fw-bold w-100 mt-auto btn-confirmar" : "btn btn-outline-danger w-100 mt-auto btn-confirmar";
 
                 col.innerHTML = `
-                    <div class="${cardClasses}">
-                        <div class="card-body d-flex flex-column justify-content-between p-3">
-                            <h5 class="${tituloClasses}">${nomeExibicao}</h5>
-                            <hr class="${hrClasses} my-2" />
-                            <div class="d-flex align-items-center justify-content-center my-3">
-                                <button class="${btnCounterClasses}" onclick="alterarContadorCard(this, -1)">−</button>
-                                <span class="fs-4 fw-bold counter mx-2">0</span>
-                                <button class="${btnCounterClasses.replace('me-2', 'ms-2')}" onclick="alterarContadorCard(this, 1)">+</button>
-                            </div>
-                            <button class="${btnConfirmarClasses}" onclick="confirmarContagem(this, '${turma.id}')">Confirmar</button>
-                        </div>
-                    </div>`;
+<div class="${cardClasses} bg-danger rounded-4 text-center">
+    <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
+        <h5 class="${tituloClasses} fw-bold text-white">${nomeExibicao}</h5>
+        <hr class="${hrClasses} border-white opacity-50 my-2" />
+        <div class="d-flex align-items-center justify-content-center my-3">
+            <button class="${btnCounterClasses} btn btn-light text-danger rounded-circle fw-bold fs-4 hover-darken"
+                style="width: 45px; height: 45px;"
+                onclick="alterarContadorCard(this, -1)">−</button>
+            <span class="fs-4 fw-bold counter mx-3 text-white">0</span>
+            <button class="${btnCounterClasses.replace('me-2', 'ms-2')} btn btn-light text-danger rounded-circle fw-bold fs-4 hover-darken"
+                style="width: 45px; height: 45px;"
+                onclick="alterarContadorCard(this, 1)">+</button>
+        </div>
+        <button class="${btnConfirmarClasses} btn btn-light text-danger fw-bold rounded-3 mt-2 hover-darken"
+            onclick="confirmarContagem(this, '${turma.id}')">Confirmar</button>
+    </div>
+</div>
+
+
+`;
                 container.appendChild(col);
             });
         }
@@ -856,45 +891,66 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
             carregarDadosContagemDashboard();
 
             // Define a página inicial a ser exibida
-            exibirPagina('pagina-home'); // Ou 'pagina-contagem' se preferir
+            exibirPagina('pagina-contagem'); // Ou 'pagina-contagem' se preferir
 
             // Listener para o botão de cadastrar nova categoria (exemplo)
-            const btnCadastrarOutros = document.getElementById('btnCadastrarNovaCategoriaOutros');
-            if (btnCadastrarOutros) {
-                btnCadastrarOutros.addEventListener('click', () => {
-                    // Implementar lógica de cadastro aqui, por exemplo, abrir um modal com SweetAlert2
-                    Swal.fire({
-                        title: 'Cadastrar Nova Turma em Outros',
-                        html: `
-                            <input id="swal-input-nome-turma" class="swal2-input" placeholder="Nome da Turma">
-                            <input id="swal-input-id-turma" class="swal2-input" placeholder="ID da Turma (numérico)">
-                        `,
-                        confirmButtonText: 'Cadastrar',
-                        focusConfirm: false,
-                        preConfirm: () => {
-                            const nome = document.getElementById('swal-input-nome-turma').value;
-                            const id = document.getElementById('swal-input-id-turma').value;
-                            if (!nome || !id) {
-                                Swal.showValidationMessage(`Por favor, preencha nome e ID.`);
-                                return false;
-                            }
-                            if (isNaN(parseInt(id))) {
-                                Swal.showValidationMessage(`O ID da turma deve ser um número.`);
-                                return false;
-                            }
-                            return { nome: nome, id: parseInt(id) };
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed && result.value) {
-                            // Aqui você faria o POST para o backend para salvar a nova turma
-                            // e depois recarregaria os cards da categoria "Outros"
-                            console.log("Nova turma a ser cadastrada:", result.value);
-                            exibirAlerta('info', 'Funcionalidade em desenvolvimento', `Cadastrar ${result.value.nome} (ID: ${result.value.id}). Lógica de backend pendente.`);
-                            // Exemplo: após salvar no backend, chamar carregarTurmasOutros();
-                        }
-                    });
+const btnCadastrarOutros = document.getElementById('btnCadastrarNovaCategoriaOutros');
+if (btnCadastrarOutros) {
+    btnCadastrarOutros.addEventListener('click', () => {
+        Swal.fire({
+            title: 'Cadastrar Nova Turma',
+            html: `
+                <input id="swal-input-nome-turma" class="swal2-input" placeholder="Nome da Turma">
+            `,
+            confirmButtonText: 'Cadastrar',
+            focusConfirm: false,
+            preConfirm: () => {
+                const nome = document.getElementById('swal-input-nome-turma').value;
+                const categoriaId = 5; // Valor padrão fixo
+
+                if (!nome) {
+                    Swal.showValidationMessage(`Por favor, preencha o nome da turma.`);
+                    return false;
+                }
+
+                return {
+                    nome_turma: nome,
+                    categorias_id_categoria: categoriaId
+                };
+            }
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                fetch('../backend/endpoints/post_turma.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(result.value)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Resposta do backend:", data);
+                    if (data.success) {
+                        exibirAlerta('success', 'Turma cadastrada com sucesso!', `Nome: ${result.value.nome_turma}`);
+                        carregarTurmasOutros(); // Atualiza lista após inserção
+                    } else {
+                        exibirAlerta('error', 'Erro ao cadastrar turma', data.message || data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro na requisição:', error);
+                    exibirAlerta('error', 'Erro inesperado', 'Não foi possível cadastrar a turma.');
                 });
             }
+        });
+    });
+}
+
+
+
+
+
+
         }
 
         // Inicializa a aplicação quando o DOM estiver pronto
