@@ -959,7 +959,6 @@ function inicializarAplicacao() {
 function abrirTabelaEscopo(elemento) {
     const escopo = elemento.getAttribute('data-escopo');
 
-    // Mapeia o nome usado no HTML para os nomes reais do banco
     const categoriasMapeadas = {
         "fundamental-i": ["Fundamental 1 A", "Fundamental 1 B"],
         "fundamental-ii": ["Fundamental 2"],
@@ -997,10 +996,18 @@ function abrirTabelaEscopo(elemento) {
 
             let tabelaHTML = `
                 <table class="table table-bordered">
-                    <thead><tr><th>Turma</th><th>Contagem</th></tr></thead>
+                    <thead><tr><th>Turma</th><th>Contagem</th><th>Ações</th></tr></thead>
                     <tbody>
                         ${filtrados.map(item => `
-                            <tr><td>${item.nome_turma}</td><td>${item.qtd_contagem}</td></tr>
+                            <tr>
+                                <td>${item.nome_turma}</td>
+                                <td>${item.qtd_contagem}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-warning" onclick='editarContagem(${JSON.stringify(item)})'>
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
                         `).join('')}
                     </tbody>
                 </table>
@@ -1009,7 +1016,7 @@ function abrirTabelaEscopo(elemento) {
             Swal.fire({
                 title: `Contagem de ${escopo.replace('-', ' ').toUpperCase()}`,
                 html: tabelaHTML,
-                width: 600
+                width: 700
             });
         })
         .catch(err => {
@@ -1028,7 +1035,63 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+const userId = 1;
 
+function editarContagem(item) {
+    Swal.fire({
+        title: `Editar contagem`,
+        html: `
+            <input type="number" id="qtdContagem" class="swal2-input" value="${item.qtd_contagem}" placeholder="Nova contagem">
+            <input type="hidden" id="idContagem" value="${item.id_contagem}">
+        `,
+        confirmButtonText: 'Salvar',
+        showCancelButton: true,
+        preConfirm: () => {
+            const qtd = document.getElementById('qtdContagem').value;
+            if (!qtd || isNaN(qtd) || qtd < 0) {
+                Swal.showValidationMessage('Digite um número válido para a contagem');
+                return false;
+            }
+
+            return {
+                id_contagem: item.id_contagem,
+                qtd_contagem: qtd,
+                turmas_id_turma: item.turmas_id_turma, // corrigido
+                users368_id_user368: 1 // substitua com o ID real do usuário logado
+            };
+        }
+    }).then(result => {
+        if (result.isConfirmed && result.value) {
+            fetch('../backend/endpoints/update_contagens.php', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(result.value)
+            })
+            .then(res => res.json())
+            .then(resp => {
+                if (resp.success) {
+                    Swal.fire('Sucesso', resp.success, 'success').then(() => {
+                        // Apenas se item.nome_categoria existir
+                        if (item.nome_categoria) {
+                            abrirTabelaEscopo(document.querySelector(`[data-escopo="${item.nome_categoria.toLowerCase().replace(/\s+/g, '-')}"`));
+                        } else {
+                            // ou apenas recarrega a tabela
+                            carregarDados();
+                        }
+                    });
+                } else {
+                    throw new Error(resp.message || 'Erro desconhecido');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                Swal.fire('Erro', 'Falha ao atualizar a contagem.', 'error');
+            });
+        }
+    });
+}
 
 
         // Inicializa a aplicação quando o DOM estiver pronto
