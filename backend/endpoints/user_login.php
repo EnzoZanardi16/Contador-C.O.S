@@ -25,7 +25,7 @@ if (!$nome || !$senha) {
 }
 
 // Buscar usuário
-$sql = "SELECT id_user368, senha_user368 FROM users368 WHERE nome_user368 = :nome";
+$sql = "SELECT id_user368, senha_user368, nivel_user368 FROM users368 WHERE nome_user368 = :nome";
 $stmt = $conn->prepare($sql);
 $stmt->bindParam(":nome", $nome, PDO::PARAM_STR);
 $stmt->execute();
@@ -34,6 +34,7 @@ $result = $stmt->fetch(PDO::FETCH_ASSOC);
 if ($result && password_verify($senha, $result["senha_user368"])) {
     $_SESSION['nome_user368'] = $nome;
     $_SESSION['LAST_ACTIVITY'] = time();
+    $_SESSION['nivel_user368'] = $result['nivel_user368'];
 
     $id_user = $result["id_user368"];
     $agora = date("Y-m-d H:i:s");

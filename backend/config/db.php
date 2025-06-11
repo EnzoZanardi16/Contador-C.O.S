@@ -1,12 +1,12 @@
 <?php
 
-$host = "localhost";
-$dbname = "cont2";
+$host = "10.188.34.143";
+$dbname = "contador_cfdb";
 $username = "root";
-$password = "";
+$password = "root";
 
 try {
-    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8",$username,$password);
+    $conn = new PDO("mysql:host=$host;dbname=$dbname;",$username,$password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 } catch (PDOException $e){

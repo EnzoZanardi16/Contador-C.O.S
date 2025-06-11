@@ -1,0 +1,589 @@
+body {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    font-family: sans-serif;
+}
+
+.sidebar {
+    width: 280px;
+    background-color: #BB2A2A;
+    color: white;
+    padding: 20px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: transform 0.3s ease;
+    /* Para menu responsivo */
+}
+
+.sidebar h2 {
+    color: white;
+    font-size: 1.8em;
+    /* Ajustado para caber melhor com a imagem */
+    margin-bottom: 15px;
+    /* Reduzido */
+    text-align: left;
+    font-weight: bold;
+}
+
+.sidebar .sidebar-header {
+    /* Novo container para logo e título */
+    text-align: center;
+    margin-bottom: 20px;
+    /* Espaço abaixo do header */
+    width: 100%;
+}
+
+.sidebar .sidebar-header img {
+    max-width: 120px;
+    /* Ajuste o tamanho do logo conforme necessário */
+    margin-bottom: 10px;
+}
+
+
+.sidebar .nav-item {
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.sidebar .nav-link {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    border-radius: 5px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    /* Estilo para link ativo */
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar .nav-link i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.sidebar .dropdown-toggle::after {
+    border: none;
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid white;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.sidebar .dropdown-menu {
+    background-color: #BB2A2A;
+    /* Tom mais claro do vermelho da sidebar */
+    border: none;
+    padding: 0;
+    margin-top: 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.sidebar .dropdown-item {
+    color: white;
+    /* Texto branco para melhor contraste */
+    padding: 10px 20px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.sidebar .dropdown-item:hover,
+.sidebar .dropdown-item.active {
+    /* Estilo para item de dropdown ativo */
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.sidebar .dropdown-item i {
+    margin-right: 8px;
+}
+
+.content {
+    flex: 1;
+    padding: 30px;
+    display: none;
+    /* Todas as páginas começam ocultas */
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.content.active {
+    /* Página ativa é exibida */
+    display: flex;
+    opacity: 1;
+}
+
+
+.content h1 {
+    color: #333;
+    font-size: 2.5em;
+    /* Ajustado */
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+#home h1.home-titulo {
+    /* Título específico da home */
+    font-size: 2.8em;
+}
+
+.info-container {
+    background-color: white;
+    padding: 25px;
+    /* Aumentado */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    /* Sombra mais suave */
+    text-align: left;
+    margin-bottom: 25px;
+    /* Aumentado */
+    width: 100%;
+    /* Ajustado */
+    max-width: 850px;
+    /* Ajustado */
+}
+
+.info-container p {
+    color: #555;
+    line-height: 1.7;
+    /* Melhorado */
+    margin-bottom: 12px;
+    /* Ajustado */
+    font-size: 1.1em;
+    /* Ajustado */
+}
+
+.info-container p:first-child {
+    font-weight: bold;
+    color: #333;
+}
+
+.contact-container {
+    text-align: left;
+    width: 100%;
+    /* Ajustado */
+    max-width: 850px;
+    /* Ajustado */
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    /* Aumentado */
+}
+
+.contact-item i {
+    color: #BB2A2A;
+    margin-right: 12px;
+    /* Aumentado */
+    font-size: 1.5em;
+    /* Ajustado */
+}
+
+.contact-item span {
+    font-size: 1.1em;
+    /* Ajustado */
+    color: #333;
+}
+
+.contact-item a {
+    /* Estilo para links nos contatos */
+    text-decoration: none;
+    color: inherit;
+    /* Herda a cor do span */
+    display: contents;
+    /* Para que o <a> não quebre o flex */
+}
+
+.contact-item a:hover span {
+    color: #BB2A2A;
+    /* Muda cor do texto no hover */
+}
+
+
+.line-titulo {
+    width: 150px;
+    /* Ajustado */
+    height: 3px;
+    /* Ajustado */
+    background-color: #BB2A2A;
+    /* Cor principal */
+    margin-bottom: 30px;
+    border-radius: 2px;
+}
+
+/* Estilos para página de Contagem (cards de resumo) */
+#pagina-contagem .card {
+    min-height: 220px;
+    /* Ajustado */
+}
+
+#pagina-contagem .card h2 {
+    font-size: 2.8em;
+    /* Tamanho do número da contagem */
+}
+
+#pagina-contagem .card p {
+    font-size: 1em;
+    /* Tamanho do texto da categoria */
+}
+
+#pagina-contagem .card i {
+    font-size: 1.2em;
+}
+
+
+/* Estilos para cards de turmas (Fundamental I, II, Médio, Outros) */
+.cards-turmas-container .card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    /* Borda sutil */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cards-turmas-container .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cards-turmas-container .card-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #BB2A2A;
+}
+
+.cards-turmas-container .counter {
+    font-size: 2em;
+    /* Tamanho do contador */
+    font-weight: bold;
+    color: #333;
+}
+
+.cards-turmas-container .btn-counter {
+    font-size: 1.2em;
+    padding: 0.3em 0.6em;
+}
+
+.cards-turmas-container .btn-confirmar {
+    font-weight: bold;
+}
+
+/* Estilo para cards "Outros" personalizados */
+.cards-turmas-container .card.card-outros-personalizado {
+    background-color: #BB2A2A;
+    /* Cor principal */
+    color: white;
+    border: none;
+}
+
+.cards-turmas-container .card.card-outros-personalizado .card-title {
+    color: white;
+}
+
+.cards-turmas-container .card.card-outros-personalizado hr {
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.cards-turmas-container .card.card-outros-personalizado .counter {
+    color: white;
+}
+
+.cards-turmas-container .card.card-outros-personalizado .btn-counter,
+.cards-turmas-container .card.card-outros-personalizado .btn-confirmar {
+    background-color: white;
+    color: #BB2A2A;
+    border-color: white;
+}
+
+.cards-turmas-container .card.card-outros-personalizado .btn-counter:hover,
+.cards-turmas-container .card.card-outros-personalizado .btn-confirmar:hover {
+    background-color: #f0f0f0;
+    color: #BB2A2A;
+}
+
+
+/* Card do Usuário */
+#pagina-usuario .card-user-container {
+    /* Container para centralizar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 70vh;
+    /* Para ocupar mais espaço vertical */
+}
+
+#pagina-usuario .card {
+    max-width: 450px;
+    /* Ajustado */
+    width: 100%;
+}
+
+#pagina-usuario .card img {
+    max-width: 80px;
+    /* Imagem menor */
+    margin-right: 15px;
+}
+
+#pagina-usuario .card h1.h4 {
+    /* Nome do usuário */
+    font-size: 1.5em;
+}
+
+
+.menu-toggle {
+    display: none;
+    /* Oculto por padrão em telas maiores */
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 1101;
+    /* Acima da sidebar */
+    background: #BB2A2A;
+    /* Cor de fundo */
+    color: white;
+    /* Cor do ícone */
+    border: none;
+    cursor: pointer;
+    font-size: 1.8rem;
+    /* Tamanho do ícone */
+    padding: 0.5rem 0.8rem;
+    /* Padding */
+    border-radius: 5px;
+    /* Bordas arredondadas */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.overlay-menu {
+    /* Para escurecer o fundo quando o menu mobile estiver aberto */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1099;
+    /* Abaixo da sidebar, mas acima do conteúdo */
+}
+
+.overlay-menu.active {
+    display: block;
+}
+
+.hover-darken:hover {
+    background-color: #e0e0e0 !important;
+    /* cinza claro escuro */
+}
+
+
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+        /* Empilha sidebar e content */
+    }
+
+    .menu-toggle {
+        display: block;
+        /* Mostra o botão hamburguer */
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1100;
+        transform: translateX(-100%);
+        /* Escondido por padrão */
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+        /* Mostra a sidebar */
+    }
+
+    .content {
+        padding: 20px;
+        /* Padding menor em mobile */
+        margin-left: 0;
+        /* Conteúdo ocupa toda a largura */
+    }
+
+    .content h1 {
+        font-size: 2em;
+    }
+
+    #home h1.home-titulo {
+        font-size: 2.2em;
+    }
+
+    .info-container,
+    .contact-container {
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .info-container p,
+    .contact-item span {
+        font-size: 1em;
+    }
+
+    #pagina-contagem .card {
+        min-height: 180px;
+    }
+
+    #pagina-contagem .card h2 {
+        font-size: 2.2em;
+    }
+
+    .cards-turmas-container .col-12 {
+        /* Garante que os cards ocupem mais espaço em mobile */
+        flex: 0 0 auto;
+        width: 80%;
+        /* Ocupa 80% para centralizar melhor */
+    }
+
+    .cards-turmas-container .row>* {
+        /* Centraliza os cards */
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Container do calendário */
+#calendar-container {
+  background-color: #fffaf9;
+  border: 2px solid #c0392b;
+  border-radius: 16px;
+  padding: 30px;
+  max-width: 800px; /* Aumentado */
+  margin: 0 auto;
+  color: #8b0000;
+  font-size: 1.2rem; /* Aumenta fonte geral */
+}
+
+/* Título do calendário */
+#calendar-container h4 {
+  font-weight: bold;
+  color: #b30000;
+  text-transform: capitalize;
+  font-size: 1.8rem;
+}
+
+/* Tabela */
+#calendar-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Cabeçalho da tabela */
+#calendar-container th {
+  background-color: #c0392b;
+  color: #ffffff;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Células */
+#calendar-container td {
+  width: 60px;
+  height: 60px;
+  font-size: 1.2rem;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+/* Hover e clique */
+#calendar-container td:hover {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+/* Dia selecionado */
+#calendar-container td.bg-danger {
+  background-color: #c0392b !important;
+  color: #fff !important;
+}
+
+/* Botões do calendário */
+#calendar-container button.btn {
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Botão Ver Contagens */
+#ver-contagens {
+  display: block;
+  margin: 30px auto 0 auto;
+  font-weight: bold;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 16px;
+  border: 2px solid #c0392b;
+  background-color: #fffaf9;
+}
+
+.modal-header {
+  background-color: #c0392b;
+  color: white;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 1;
+}
+
+/* Cartões de contagem */
+#resultado-contagens .border-danger {
+  border-width: 2px !important;
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+#resultado-contagens h5 {
+  color: #c0392b;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+#resultado-contagens ul li {
+  padding: 4px 0;
+  font-size: 1.1rem;
+}

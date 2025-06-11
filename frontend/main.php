@@ -1,21 +1,15 @@
 <?php
 session_start();
-// O require do db.php deve instanciar a variável $conn
-require '../backend/config/db.php'; // Garanta que $conn seja inicializada aqui.
+require '../backend/config/db.php';
 
-// Configurações de exibição de erros
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set("display_errors", 1);
 
-// Variáveis de sessão e data
 $dataAtualFormatadaParaSQL = date('Y-m-d');
-$nomeUsuario = $_SESSION['nome_user368'] ?? 'Usuário'; // Define um nome padrão
-$nomeUsuarioFormatado = mb_convert_case($nomeUsuario, MB_CASE_TITLE, "UTF-8");
+$nomeUsuario = $_SESSION['nome_user368'] ?? 'Usuário';
+$nomeUsuarioFormatado = ucwords(strtolower($nomeUsuario));
 $tokenSessao = $_SESSION['token'] ?? '';
+$nivelSessao = intval($_SESSION['nivel_user368']);
 
-// Função para buscar a soma da contagem por categoria (exemplo, se fosse usada no PHP)
-// Atualmente, a lógica principal de contagem é carregada via JS por contagens_dia.php
 function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
 {
     $sql = "SELECT SUM(c.qtd_contagem) AS total 
@@ -31,13 +25,6 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
     return $resultado['total'] ?? 0;
 }
 
-// Exemplo de como poderia ser usado se os dados fossem pré-carregados pelo PHP:
-// $contagemFund1PHP = buscarSomaContagemPorCategoriaPHP($conn, 1, $dataAtualFormatadaParaSQL) +
-//                     buscarSomaContagemPorCategoriaPHP($conn, 2, $dataAtualFormatadaParaSQL) +
-//                     buscarSomaContagemPorCategoriaPHP($conn, 3, $dataAtualFormatadaParaSQL);
-// $contagemFund2PHP = buscarSomaContagemPorCategoriaPHP($conn, 4, $dataAtualFormatadaParaSQL);
-// $contagemMedioPHP = buscarSomaContagemPorCategoriaPHP($conn, 5, $dataAtualFormatadaParaSQL);
-
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -48,477 +35,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
     <title>Contador de Alunos SESI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <style>
-        body {
-            display: flex;
-            min-height: 100vh;
-            background-color: #f8f9fa;
-            font-family: sans-serif;
-        }
-
-        .sidebar {
-            width: 280px;
-            background-color: #BB2A2A;
-            color: white;
-            padding: 20px;
-            flex-shrink: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            transition: transform 0.3s ease;
-            /* Para menu responsivo */
-        }
-
-        .sidebar h2 {
-            color: white;
-            font-size: 1.8em;
-            /* Ajustado para caber melhor com a imagem */
-            margin-bottom: 15px;
-            /* Reduzido */
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .sidebar .sidebar-header {
-            /* Novo container para logo e título */
-            text-align: center;
-            margin-bottom: 20px;
-            /* Espaço abaixo do header */
-            width: 100%;
-        }
-
-        .sidebar .sidebar-header img {
-            max-width: 120px;
-            /* Ajuste o tamanho do logo conforme necessário */
-            margin-bottom: 10px;
-        }
-
-
-        .sidebar .nav-item {
-            margin-bottom: 15px;
-            width: 100%;
-        }
-
-        .sidebar .nav-link {
-            color: white;
-            padding: 10px 15px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            border-radius: 5px;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            /* Estilo para link ativo */
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            font-size: 1.2em;
-        }
-
-        .sidebar .dropdown-toggle::after {
-            border: none;
-            content: '';
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 8px solid white;
-            margin-left: 5px;
-            vertical-align: middle;
-        }
-
-        .sidebar .dropdown-menu {
-            background-color: #BB2A2A;
-            /* Tom mais claro do vermelho da sidebar */
-            border: none;
-            padding: 0;
-            margin-top: 0;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 100%;
-        }
-
-        .sidebar .dropdown-item {
-            color: white;
-            /* Texto branco para melhor contraste */
-            padding: 10px 20px;
-            text-decoration: none;
-            display: block;
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        .sidebar .dropdown-item:hover,
-        .sidebar .dropdown-item.active {
-            /* Estilo para item de dropdown ativo */
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-
-        .sidebar .dropdown-item i {
-            margin-right: 8px;
-        }
-
-        .content {
-            flex: 1;
-            padding: 30px;
-            display: none;
-            /* Todas as páginas começam ocultas */
-            flex-direction: column;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        .content.active {
-            /* Página ativa é exibida */
-            display: flex;
-            opacity: 1;
-        }
-
-
-        .content h1 {
-            color: #333;
-            font-size: 2.5em;
-            /* Ajustado */
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        #home h1.home-titulo {
-            /* Título específico da home */
-            font-size: 2.8em;
-        }
-
-        .info-container {
-            background-color: white;
-            padding: 25px;
-            /* Aumentado */
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            /* Sombra mais suave */
-            text-align: left;
-            margin-bottom: 25px;
-            /* Aumentado */
-            width: 100%;
-            /* Ajustado */
-            max-width: 850px;
-            /* Ajustado */
-        }
-
-        .info-container p {
-            color: #555;
-            line-height: 1.7;
-            /* Melhorado */
-            margin-bottom: 12px;
-            /* Ajustado */
-            font-size: 1.1em;
-            /* Ajustado */
-        }
-
-        .info-container p:first-child {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .contact-container {
-            text-align: left;
-            width: 100%;
-            /* Ajustado */
-            max-width: 850px;
-            /* Ajustado */
-        }
-
-        .contact-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            /* Aumentado */
-        }
-
-        .contact-item i {
-            color: #BB2A2A;
-            margin-right: 12px;
-            /* Aumentado */
-            font-size: 1.5em;
-            /* Ajustado */
-        }
-
-        .contact-item span {
-            font-size: 1.1em;
-            /* Ajustado */
-            color: #333;
-        }
-
-        .contact-item a {
-            /* Estilo para links nos contatos */
-            text-decoration: none;
-            color: inherit;
-            /* Herda a cor do span */
-            display: contents;
-            /* Para que o <a> não quebre o flex */
-        }
-
-        .contact-item a:hover span {
-            color: #BB2A2A;
-            /* Muda cor do texto no hover */
-        }
-
-
-        .line-titulo {
-            width: 150px;
-            /* Ajustado */
-            height: 3px;
-            /* Ajustado */
-            background-color: #BB2A2A;
-            /* Cor principal */
-            margin-bottom: 30px;
-            border-radius: 2px;
-        }
-
-        /* Estilos para página de Contagem (cards de resumo) */
-        #pagina-contagem .card {
-            min-height: 220px;
-            /* Ajustado */
-        }
-
-        #pagina-contagem .card h2 {
-            font-size: 2.8em;
-            /* Tamanho do número da contagem */
-        }
-
-        #pagina-contagem .card p {
-            font-size: 1em;
-            /* Tamanho do texto da categoria */
-        }
-
-        #pagina-contagem .card i {
-            font-size: 1.2em;
-        }
-
-
-        /* Estilos para cards de turmas (Fundamental I, II, Médio, Outros) */
-        .cards-turmas-container .card {
-            background-color: #fff;
-            border: 1px solid #ddd;
-            /* Borda sutil */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .cards-turmas-container .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .cards-turmas-container .card-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #BB2A2A;
-        }
-
-        .cards-turmas-container .counter {
-            font-size: 2em;
-            /* Tamanho do contador */
-            font-weight: bold;
-            color: #333;
-        }
-
-        .cards-turmas-container .btn-counter {
-            font-size: 1.2em;
-            padding: 0.3em 0.6em;
-        }
-
-        .cards-turmas-container .btn-confirmar {
-            font-weight: bold;
-        }
-
-        /* Estilo para cards "Outros" personalizados */
-        .cards-turmas-container .card.card-outros-personalizado {
-            background-color: #BB2A2A;
-            /* Cor principal */
-            color: white;
-            border: none;
-        }
-
-        .cards-turmas-container .card.card-outros-personalizado .card-title {
-            color: white;
-        }
-
-        .cards-turmas-container .card.card-outros-personalizado hr {
-            border-top: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .cards-turmas-container .card.card-outros-personalizado .counter {
-            color: white;
-        }
-
-        .cards-turmas-container .card.card-outros-personalizado .btn-counter,
-        .cards-turmas-container .card.card-outros-personalizado .btn-confirmar {
-            background-color: white;
-            color: #BB2A2A;
-            border-color: white;
-        }
-
-        .cards-turmas-container .card.card-outros-personalizado .btn-counter:hover,
-        .cards-turmas-container .card.card-outros-personalizado .btn-confirmar:hover {
-            background-color: #f0f0f0;
-            color: #BB2A2A;
-        }
-
-
-        /* Card do Usuário */
-        #pagina-usuario .card-user-container {
-            /* Container para centralizar */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            min-height: 70vh;
-            /* Para ocupar mais espaço vertical */
-        }
-
-        #pagina-usuario .card {
-            max-width: 450px;
-            /* Ajustado */
-            width: 100%;
-        }
-
-        #pagina-usuario .card img {
-            max-width: 80px;
-            /* Imagem menor */
-            margin-right: 15px;
-        }
-
-        #pagina-usuario .card h1.h4 {
-            /* Nome do usuário */
-            font-size: 1.5em;
-        }
-
-
-        .menu-toggle {
-            display: none;
-            /* Oculto por padrão em telas maiores */
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1101;
-            /* Acima da sidebar */
-            background: #BB2A2A;
-            /* Cor de fundo */
-            color: white;
-            /* Cor do ícone */
-            border: none;
-            cursor: pointer;
-            font-size: 1.8rem;
-            /* Tamanho do ícone */
-            padding: 0.5rem 0.8rem;
-            /* Padding */
-            border-radius: 5px;
-            /* Bordas arredondadas */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .overlay-menu {
-            /* Para escurecer o fundo quando o menu mobile estiver aberto */
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1099;
-            /* Abaixo da sidebar, mas acima do conteúdo */
-        }
-
-        .overlay-menu.active {
-            display: block;
-        }
-
-        .hover-darken:hover {
-            background-color: #e0e0e0 !important;
-            /* cinza claro escuro */
-        }
-
-
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                /* Empilha sidebar e content */
-            }
-
-            .menu-toggle {
-                display: block;
-                /* Mostra o botão hamburguer */
-            }
-
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                z-index: 1100;
-                transform: translateX(-100%);
-                /* Escondido por padrão */
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
-            }
-
-            .sidebar.active {
-                transform: translateX(0);
-                /* Mostra a sidebar */
-            }
-
-            .content {
-                padding: 20px;
-                /* Padding menor em mobile */
-                margin-left: 0;
-                /* Conteúdo ocupa toda a largura */
-            }
-
-            .content h1 {
-                font-size: 2em;
-            }
-
-            #home h1.home-titulo {
-                font-size: 2.2em;
-            }
-
-            .info-container,
-            .contact-container {
-                max-width: 100%;
-                padding: 20px;
-            }
-
-            .info-container p,
-            .contact-item span {
-                font-size: 1em;
-            }
-
-            #pagina-contagem .card {
-                min-height: 180px;
-            }
-
-            #pagina-contagem .card h2 {
-                font-size: 2.2em;
-            }
-
-            .cards-turmas-container .col-12 {
-                /* Garante que os cards ocupem mais espaço em mobile */
-                flex: 0 0 auto;
-                width: 80%;
-                /* Ocupa 80% para centralizar melhor */
-            }
-
-            .cards-turmas-container .row>* {
-                /* Centraliza os cards */
-                margin-left: auto;
-                margin-right: auto;
-            }
-        }
-    </style>
+    <link href="assets/styles.css" rel="stylesheet">
 </head>
 
 <body>
@@ -555,6 +72,18 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                             Outros</a></li>
                 </ul>
             </li>
+            <?php
+                if($nivelSessao == 1 or $nivelSessao == 2){
+                    echo '
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-page="painel-nutricionista">
+                                <i class="bi bi-card-checklist"></i>
+                                Painel Nutricionista
+                            </a>
+                        </li>
+                    ';
+                }
+            ?>
             <li class="nav-item">
                 <a href="#" class="nav-link" data-page="pagina-usuario">
                     <i class="bi bi-person-fill"></i>
@@ -580,6 +109,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                     rel="noopener noreferrer">
                     <i class="bi bi-geo-alt-fill"></i>
                     <span>SESI - Regente Feijó</span>
+                    
                 </a>
             </div>
             <div class="contact-item">
@@ -680,6 +210,26 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         </div>
     </div>
 
+    <div id="painel-nutricionista" class="content">
+        <h1 class="home-titulo">Calendário das Contagens</h1>
+        <div id="calendar-container"></div>
+
+        <button id="ver-contagens" class="btn btn-danger mt-3" disabled>Ver Contagens</button>
+
+        <div class="modal fade" id="contagemModal" tabindex="-1" aria-labelledby="contagemModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="contagemModalLabel">Contagens do Dia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body" id="resultado-contagens">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="pagina-fundamental1" class="content cards-turmas-container">
         <h1 class="text-center my-4">Fundamental I</h1>
         <div class="container">
@@ -719,6 +269,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        
         // Bloco de Script Principal
         const urlsBackend = {
             postContagens: "../backend/endpoints/post_contagens.php",
@@ -1046,6 +597,8 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                                     if (data.success) {
                                         exibirAlerta('success', 'Turma cadastrada com sucesso!', `Nome: ${result.value.nome_turma}`);
                                         carregarTurmasOutros();
+                                        inicializarAplicacao();
+
                                     } else {
                                         exibirAlerta('error', 'Erro ao cadastrar turma', data.message || data.error);
                                     }
@@ -1176,6 +729,7 @@ async function editarContagem(item, escopo) {
                 headers: {
                     'Content-Type': 'application/json'
                 },
+
                 body: JSON.stringify(formValues)
             });
 
@@ -1186,10 +740,10 @@ async function editarContagem(item, escopo) {
             }
 
             await Swal.fire('Sucesso', resp.success, 'success');
+            inicializarAplicacao();
 
             const botao = document.querySelector(`[data-escopo="${escopo}"]`);
             if (botao) abrirTabelaEscopo(botao);
-
         } catch (err) {
             console.error('Falha ao atualizar:', err);
             Swal.fire('Erro', 'Não foi possível atualizar a contagem.', 'error');
@@ -1200,6 +754,137 @@ async function editarContagem(item, escopo) {
         document.addEventListener('DOMContentLoaded', inicializarAplicacao);
 
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/pt-br.js"></script>
+    <script>
+    dayjs.locale('pt-br');
+    const hoje = dayjs();
+    const inicio = dayjs('2025-01-01');
+    let dataSelecionada = null;
+
+    function gerarCalendario(mesRef) {
+      const container = document.getElementById('calendar-container');
+      container.innerHTML = '';
+
+      const data = dayjs(mesRef).startOf('month');
+      const fimDoMes = data.endOf('month').date();
+      const primeiroDiaSemana = data.day();
+
+      const header = document.createElement('div');
+      header.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'mb-2');
+
+      const btnAnt = document.createElement('button');
+      btnAnt.textContent = '←';
+      btnAnt.classList.add('btn', 'btn-outline-secondary');
+      btnAnt.onclick = () => {
+        const anterior = data.subtract(1, 'month');
+        if (anterior.isAfter(inicio.subtract(1, 'day'))) gerarCalendario(anterior);
+      };
+
+      const btnProx = document.createElement('button');
+      btnProx.textContent = '→';
+      btnProx.classList.add('btn', 'btn-outline-secondary');
+      btnProx.onclick = () => {
+        const proximo = data.add(1, 'month');
+        if (proximo.isBefore(hoje.startOf('month').add(1, 'day'))) gerarCalendario(proximo);
+      };
+
+      const titulo = document.createElement('h4');
+      titulo.classList.add('mb-0');
+      titulo.textContent = data.format('MMMM [de] YYYY');
+
+      header.appendChild(btnAnt);
+      header.appendChild(titulo);
+      header.appendChild(btnProx);
+      container.appendChild(header);
+
+      const tabela = document.createElement('table');
+      tabela.classList.add('table', 'text-center');
+      const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const thead = document.createElement('thead');
+      const trHead = document.createElement('tr');
+      diasSemana.forEach(d => {
+        const th = document.createElement('th');
+        th.textContent = d;
+        trHead.appendChild(th);
+      });
+      thead.appendChild(trHead);
+      tabela.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        let tr = document.createElement('tr');
+        for (let i = 0; i < primeiroDiaSemana; i++) {
+          tr.appendChild(document.createElement('td'));
+        }
+
+        for (let dia = 1; dia <= fimDoMes; dia++) {
+          const td = document.createElement('td');
+          td.textContent = dia;
+          const dataCompleta = data.date(dia);
+
+          if (dataCompleta.isAfter(hoje, 'day')) {
+            td.classList.add('text-muted');
+          } else {
+            td.style.cursor = 'pointer';
+            td.onclick = () => {
+              document.querySelectorAll('#calendar-container td').forEach(t => t.classList.remove('bg-danger', 'text-white'));
+              td.classList.add('bg-danger', 'text-white');
+              dataSelecionada = dataCompleta.format('YYYY-MM-DD');
+              document.getElementById('ver-contagens').disabled = false;
+            };
+          }
+
+          tr.appendChild(td);
+          if (tr.children.length === 7) {
+            tbody.appendChild(tr);
+            tr = document.createElement('tr');
+          }
+        }
+
+        if (tr.children.length) tbody.appendChild(tr);
+        tabela.appendChild(tbody);
+        container.appendChild(tabela);
+      }
+
+      gerarCalendario(hoje);
+
+      document.getElementById('ver-contagens').addEventListener('click', () => {
+        if (!dataSelecionada) return;
+        fetch(`../backend/endpoints/get_contagens_data.php?data=${dataSelecionada}`)
+          .then(resp => resp.json())
+          .then(dados => {
+            const container = document.getElementById('resultado-contagens');
+            container.innerHTML = '';
+
+            for (const categoria in dados) {
+              if (dados[categoria].length === 0) continue;
+
+              const card = document.createElement('div');
+              card.classList.add('border', 'border-danger', 'p-3', 'mb-3');
+
+              const titulo = document.createElement('h5');
+              titulo.classList.add('text-danger', 'fw-bold');
+              titulo.textContent = `${categoria}: ${dados[categoria].reduce((soma, turma) => soma + turma.qtd_contagem, 0)}`;
+              card.appendChild(titulo);
+
+              const lista = document.createElement('ul');
+              lista.classList.add('list-unstyled');
+              dados[categoria].forEach(turma => {
+                const item = document.createElement('li');
+                item.textContent = `${turma.nome_turma}: ${turma.qtd_contagem}`;
+                lista.appendChild(item);
+              });
+
+              card.appendChild(lista);
+              container.appendChild(card);
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('contagemModal'));
+            modal.show();
+          });
+      });
+</script>
+
 </body>
 
 </html>
