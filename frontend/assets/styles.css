@@ -42,7 +42,6 @@ body {
     margin-bottom: 10px;
 }
 
-
 .sidebar .nav-item {
     margin-bottom: 15px;
     width: 100%;
@@ -415,9 +414,17 @@ body {
         box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
     }
 
+    .sidebar-header {
+        margin-top: 80px;
+    }
+
     .sidebar.active {
         transform: translateX(0);
         /* Mostra a sidebar */
+    }
+
+    .sidebar img {
+        display: none;
     }
 
     .content {
@@ -470,120 +477,142 @@ body {
 
 /* Container do calendário */
 #calendar-container {
-  background-color: #fffaf9;
-  border: 2px solid #c0392b;
-  border-radius: 16px;
-  padding: 30px;
-  max-width: 800px; /* Aumentado */
-  margin: 0 auto;
-  color: #8b0000;
-  font-size: 1.2rem; /* Aumenta fonte geral */
+    background-color: #fffaf9;
+    border: 2px solid #c0392b;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 800px;
+    /* Aumentado */
+    margin: 0 auto;
+    color: #8b0000;
+    font-size: 1.2rem;
+    /* Aumenta fonte geral */
 }
 
 /* Título do calendário */
 #calendar-container h4 {
-  font-weight: bold;
-  color: #b30000;
-  text-transform: capitalize;
-  font-size: 1.8rem;
+    font-weight: bold;
+    color: #b30000;
+    text-transform: capitalize;
+    font-size: 1.8rem;
 }
 
 /* Tabela */
 #calendar-container table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 
 /* Cabeçalho da tabela */
 #calendar-container th {
-  background-color: #c0392b;
-  color: #ffffff;
-  padding: 16px;
-  font-size: 1.1rem;
-  font-weight: 600;
+    background-color: #c0392b;
+    color: #ffffff;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
 }
 
 /* Células */
 #calendar-container td {
-  width: 60px;
-  height: 60px;
-  font-size: 1.2rem;
-  padding: 10px;
-  text-align: center;
-  vertical-align: middle;
-  border-radius: 10px;
-  transition: background-color 0.2s ease;
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+    transition: background-color 0.2s ease;
 }
 
 /* Hover e clique */
 #calendar-container td:hover {
-  background-color: #e74c3c;
-  color: #fff;
+    background-color: #e74c3c;
+    color: #fff;
 }
 
 /* Dia selecionado */
 #calendar-container td.bg-danger {
-  background-color: #c0392b !important;
-  color: #fff !important;
+    background-color: #c0392b !important;
+    color: #fff !important;
 }
 
 /* Botões do calendário */
 #calendar-container button.btn {
-  border-radius: 12px;
-  padding: 10px 20px;
-  font-weight: bold;
-  font-size: 1.2rem;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1.2rem;
 }
 
-/* Botão Ver Contagens */
 #ver-contagens {
-  display: block;
-  margin: 30px auto 0 auto;
-  font-weight: bold;
-  padding: 12px 32px;
-  border-radius: 8px;
-  font-size: 1.2rem;
+    width: 160px;
+    height: 70px;
+    display: block;
+    margin-top: 20px !important;
+    font-weight: bold;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
-/* Modal */
+.voltar-btn {
+    width: 160px;
+    height: 70px;
+    display: block;
+    margin-top: 20px !important;
+    font-weight: bold;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
 .modal-content {
-  border-radius: 16px;
-  border: 2px solid #c0392b;
-  background-color: #fffaf9;
+    border-radius: 16px;
+    border: 2px solid #c0392b;
+    background-color: #fffaf9;
 }
 
 .modal-header {
-  background-color: #c0392b;
-  color: white;
-  border-bottom: none;
+    background-color: #c0392b;
+    color: white;
+    border-bottom: none;
 }
 
 .modal-title {
-  font-weight: bold;
-  font-size: 1.5rem;
+    font-weight: bold;
+    font-size: 1.5rem;
 }
 
 .btn-close {
-  background-color: #fff;
-  border-radius: 50%;
-  opacity: 1;
+    background-color: #fff;
+    border-radius: 50%;
+    opacity: 1;
 }
 
-/* Cartões de contagem */
 #resultado-contagens .border-danger {
-  border-width: 2px !important;
-  border-radius: 12px;
-  background-color: #fff;
+    border-width: 2px !important;
+    border-radius: 12px;
+    background-color: #fff;
 }
 
 #resultado-contagens h5 {
-  color: #c0392b;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 5px;
-  font-size: 1.2rem;
+    color: #c0392b;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    font-size: 1.2rem;
 }
 
 #resultado-contagens ul li {
-  padding: 4px 0;
-  font-size: 1.1rem;
+    padding: 4px 0;
+    font-size: 1.1rem;
+}
+
+.abrir-contagem:hover {
+    cursor: pointer;
+    background-color: #fae5e5 !important;
+    transition: background-color 0.5s ease;
+}
+
+.text-muted {
+    opacity: 0.5;
 }
