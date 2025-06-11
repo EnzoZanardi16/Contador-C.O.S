@@ -1,10 +1,10 @@
 <?php
 
 session_start();
-var_dump($_SESSION['nome_user368']);
 if(isset($_SESSION['nome_user368'])){
   header("Location: main.php");
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
