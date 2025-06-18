@@ -4,10 +4,11 @@ session_start();
 
 if ($_SESSION['nome_user368'] == null or $_SESSION['nome_user368'] == "") {
   header("Location: index.php");
-  if($_SESSION['nivel_user368'] != 2){
-    header("Location: main.php");
-  }
 };
+
+if($_SESSION['nivel_user368'] != 2){
+  header("Location: ../main.php");
+}
 
 ?>
 

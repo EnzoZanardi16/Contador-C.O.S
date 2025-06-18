@@ -1,9 +1,11 @@
 <?php
 
 session_start();
-if(isset($_SESSION['nome_user368'])){
+if (isset($_SESSION['nome_user368'])) {
   header("Location: main.php");
 }
+
+
 
 ?>
 <!DOCTYPE html>
@@ -21,25 +23,27 @@ if(isset($_SESSION['nome_user368'])){
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-body {
-  height: 100vh;
-  background-image: url('../public/images/Culinária Otimizada.png');
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
+    body {
+      height: 100vh;
+      background-image: url('../public/images/Culinária Otimizada.png');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-@media (max-width: 768px) {
-  body {
-    background-image: none; /* remove a imagem */
-    background-color: #B91C1C; /* aplica a cor */
-  }
-}
+    @media (max-width: 768px) {
+      body {
+        background-image: none;
+        /* remove a imagem */
+        background-color: #B91C1C;
+        /* aplica a cor */
+      }
+    }
 
 
     .titulo-topo {
@@ -161,25 +165,43 @@ body {
   <div class="card">
     <div class="titulo-card">Otimizada</div>
 
-        <form action="../backend/endpoints/user_login.php" method="POST">
-            <fieldset>
-                <legend>Usuário</legend>
-                <input type="text" name="nome_user368" required />
-            </fieldset>
+    <form action="../backend/endpoints/user_login.php" method="POST">
+      <fieldset>
+        <legend>Usuário</legend>
+        <input type="text" name="nome_user368" required />
+      </fieldset>
 
-            <fieldset>
-                <legend>Senha</legend>
-                <input type="password" name="senha_user368" required />
-            </fieldset>
+      <fieldset>
+        <legend>Senha</legend>
+        <input type="password" name="senha_user368" required />
+      </fieldset>
 
-            <div class="checkbox-container">
-                <input type="checkbox" id="lembrar" name="lembrar" />
-                <label for="lembrar">Lembrar minha senha</label>
-            </div>
+      <div class="checkbox-container">
+        <input type="checkbox" id="lembrar" name="lembrar" />
+        <label for="lembrar">Lembrar minha senha</label>
+      </div>
 
-            <button type="submit">Entrar</button>
-        </form>
+      <button type="submit">Entrar</button>
+    </form>
   </div>
+
+  <?php if (isset($_GET['erro']) && $_GET['erro'] == 1): ?>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erro ao entrar',
+          text: 'Usuário ou senha incorretos.',
+          confirmButtonColor: '#B91C1C',
+          background: '#fff8f0',
+          color: '#000'
+        });
+      });
+    </script>
+  <?php endif; ?>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

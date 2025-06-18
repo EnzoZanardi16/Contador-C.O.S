@@ -15,8 +15,12 @@ class PDF extends FPDF
 
     function Footer()
     {
-        $this->SetY(-15);
+        $this->SetY(-35); // Sobe 30 mm a partir do final da página (ajustável conforme altura do rodapé)
+        $this->Image('rodape.png', 0, $this->GetY(), 210);
+
+        // Se quiser adicionar número da página por cima do rodapé:
         $this->SetFont('Arial', 'I', 8);
+        $this->SetTextColor(255); // branco, bom para fundo escuro
         $this->Cell(0, 10, utf8_decode('Página ') . $this->PageNo(), 0, 0, 'C');
     }
 }
@@ -93,4 +97,4 @@ try {
 }
 
 // Saída do PDF
-$pdf->Output('D', 'relatorio_contagens.pdf');
+$pdf->Output('D', 'relatorio_contagens_' . $_GET['data'] . '.pdf');

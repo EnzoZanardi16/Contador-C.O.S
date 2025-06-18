@@ -207,8 +207,11 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                         <?php echo htmlspecialchars($nomeUsuarioFormatado, ENT_QUOTES, 'UTF-8'); ?>
                     </h1>
                 </div>
-                <? if ($_SESSION['nivel_user368'] == 2) ?>
-                <a href="admin/dashboard.php" class="btn btn-outline-danger mb-3"><i class="bi bi-gear"></i> Painel do Desenvolvedor</a>
+                <?php
+                if ($_SESSION['nivel_user368'] == 2){
+                    echo '<a href="admin/dashboard.php" class="btn btn-outline-danger mb-3"><i class="bi bi-gear"></i> Painel do Desenvolvedor</a>';
+                }
+                ?>
                 <form id="form-logout" action="../backend/endpoints/user_logout.php" method="POST">
                     <input type="hidden" name="token"
                         value="<?php echo htmlspecialchars($tokenSessao, ENT_QUOTES, 'UTF-8'); ?>">
@@ -310,13 +313,13 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         </script>
 
         <div class="d-flex gap-2 mt-1">
-            
-        <?php
-        $dataAtualFormatadaParaSQL = date('Y-m-d');
-        echo '<a href="../backend/reports/gerar_relatorio.php?data=' . $dataAtualFormatadaParaSQL . '" target="_blank">
+
+            <?php
+            $dataAtualFormatadaParaSQL = date('Y-m-d');
+            echo '<a href="../backend/reports/gerar_relatorio.php?data=' . $dataAtualFormatadaParaSQL . '" target="_blank">
     <button class="btn btn-danger"><i class="bi bi-filetype-pdf"></i> Gerar Relatório de Hoje</button>
 </a>';
-        ?>
+            ?>
             <button class="btn btn-danger" onclick="exibirPagina('painel-nutricionista-calendario')">
                 <i class="bi bi-calendar4-week"></i> Calendário das Contagens
             </button>
@@ -440,10 +443,17 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         function alterarContadorCard(button, delta) {
             const counterElement = button.parentElement.querySelector(".counter");
             if (!counterElement) return;
+
             let currentValue = parseInt(counterElement.textContent, 10);
-            currentValue = Math.max(0, currentValue + delta);
-            counterElement.textContent = currentValue;
+            let newValue = currentValue + delta;
+
+            // Garante que o valor fique entre 0 e 32
+            newValue = Math.max(0, Math.min(32, newValue));
+
+            counterElement.textContent = newValue;
         }
+
+
         window.alterarContadorCard = alterarContadorCard;
 
         async function confirmarContagem(button, turmaId) {

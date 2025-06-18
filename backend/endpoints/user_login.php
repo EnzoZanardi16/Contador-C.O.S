@@ -56,6 +56,7 @@ if ($result && password_verify($senha, $result["senha_user368"])) {
     header("Location: ../../frontend/main.php");
     exit;
 } else {
-    echo json_encode(["status" => "erro", "mensagem" => "Usuário ou senha incorretos"]);
+    header("Location: ../../frontend/index.php?erro=1");
+    exit;
 }
 ?>
