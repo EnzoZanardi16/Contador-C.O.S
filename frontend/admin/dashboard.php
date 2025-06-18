@@ -1,3 +1,16 @@
+<?php
+
+session_start();
+
+if ($_SESSION['nome_user368'] == null or $_SESSION['nome_user368'] == "") {
+  header("Location: index.php");
+  if($_SESSION['nivel_user368'] != 2){
+    header("Location: main.php");
+  }
+};
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -5,33 +18,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Sistema de Contagens</title>
-  <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <!-- Meu css -->
   <link rel="stylesheet" href="../style.css">
-
+  <style>
+    .list-group-scroll {
+        max-height: 300px !important;
+        overflow-y: auto !important;
+    }
+  </style>
 </head>
 
 <body>
   <?php
-
   include '../template/navbar.php';
 
   ?>
-
-  <!-- Main Container -->
   <div class="container my-4">
     <h1 class="text-center mb-4 text-primary">Dashboard</h1>
     <div id="cards-container" class="row gy-4"></div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
       const tabelas = {
         "categorias": "Categorias",
         "contagens": "Contagens",
@@ -51,7 +61,7 @@
             let container = document.getElementById("cards-container");
 
             let col = document.createElement("div");
-            col.className = "col-md-3";
+            col.className = "col-12 col-sm-6 col-md-4 col-lg-3";
 
             let card = document.createElement("div");
             card.className = "card shadow-sm";
@@ -64,7 +74,7 @@
             title.textContent = tabelas[tabela] || tabela;
 
             let list = document.createElement("ul");
-            list.className = "list-group list-group-flush";
+            list.className = "list-group list-group-flush list-group-scroll";
 
             data.forEach(row => {
               let listItem = document.createElement("li");
@@ -82,7 +92,7 @@
               let viewButton = document.createElement("button");
               viewButton.className = "btn btn-primary btn-sm";
               viewButton.innerHTML = '<i class="bi bi-pencil-square"></i>';
-              viewButton.onclick = function () {
+              viewButton.onclick = function() {
                 if (id) {
                   window.location.href = `../views/view_details.php?tabela=${tabela}&id=${id}`;
                 }
@@ -91,7 +101,7 @@
               let deleteButton = document.createElement("button");
               deleteButton.className = "btn btn-danger btn-sm";
               deleteButton.innerHTML = '<i class="bi bi-trash3"></i>';
-              deleteButton.onclick = function () {
+              deleteButton.onclick = function() {
                 Swal.fire({
                   title: `Excluir item?`,
                   text: `Tem certeza que deseja excluir este item da tabela ${tabela}?`,
@@ -104,18 +114,32 @@
                   color: '#ffffff'
                 }).then((result) => {
                   if (result.isConfirmed) {
-                    fetch(`../../backend/endpoints/delete_data.php?tabela=${tabela}&id=${id}`, { method: "GET" })
+                    fetch(`../../backend/endpoints/delete_data.php?tabela=${tabela}&id=${id}`, {
+                        method: "GET"
+                      })
                       .then(response => response.json())
                       .then(result => {
                         if (result.success) {
-                          Swal.fire({ icon: 'success', title: 'Excluído!', text: 'Item excluído com sucesso!' })
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'Excluído!',
+                              text: 'Item excluído com sucesso!'
+                            })
                             .then(() => window.location.reload());
                         } else {
-                          Swal.fire({ icon: 'error', title: 'Erro!', text: result.error || "Erro ao excluir item." });
+                          Swal.fire({
+                            icon: 'error',
+                            title: 'Erro!',
+                            text: result.error || "Erro ao excluir item."
+                          });
                         }
                       })
                       .catch(error => {
-                        Swal.fire({ icon: 'error', title: 'Erro!', text: 'Erro ao excluir item.' });
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'Erro!',
+                          text: 'Erro ao excluir item.'
+                        });
                       });
                   }
                 });
@@ -143,7 +167,6 @@
           });
       });
     });
-
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

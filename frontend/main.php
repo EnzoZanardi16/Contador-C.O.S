@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if($_SESSION['nome_user368'] == null){
+if ($_SESSION['nome_user368'] == null) {
     header("Location: index.php");
 }
 
@@ -41,6 +41,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="assets/styles.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
 </head>
 
 <body style="background-color: #FFFDF7;">
@@ -206,23 +207,118 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                         <?php echo htmlspecialchars($nomeUsuarioFormatado, ENT_QUOTES, 'UTF-8'); ?>
                     </h1>
                 </div>
+                <? if ($_SESSION['nivel_user368'] == 2) ?>
+                <a href="admin/dashboard.php" class="btn btn-outline-danger mb-3"><i class="bi bi-gear"></i> Painel do Desenvolvedor</a>
                 <form id="form-logout" action="../backend/endpoints/user_logout.php" method="POST">
                     <input type="hidden" name="token"
                         value="<?php echo htmlspecialchars($tokenSessao, ENT_QUOTES, 'UTF-8'); ?>">
-                    <button type="submit" class="btn btn-outline-danger w-100">Sair da Conta</button>
+                    <button type="submit" class="btn btn-outline-danger w-100"><i class="bi bi-door-open"></i> Sair da Conta</button>
                 </form>
             </div>
         </div>
     </div>
 
     <div id="painel-nutricionista" class="content">
-        <button class="btn btn-danger" onclick="exibirPagina('painel-nutricionista-calendario')">
-            <i class="bi bi-calendar4-week"></i> Ver Calendário das Contagens
-        </button>
-        <button class="btn btn-danger" onclick="exibirPagina('painel-nutricionista-anotacoes')">
-            <i class="bi bi-calendar4-week"></i> Ver Calendário das Anotações
-        </button>
+        <h1>Painel da Nutricionista</h1>
+        <canvas id="graficoTurmas" width="800" height="240"></canvas>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch('../backend/endpoints/contagens_turma.php')
+                    .then(response => response.json())
+                    .then(data => {
+
+                        
+                        if (data.error) {
+                            console.error(data.error);
+                            return;
+                        }
+                        
+                        const ordemFundamental = [
+                            "1º Ano", "2º Ano", "3º Ano", "4º Ano", "5º Ano",
+                            "6º Ano", "7º Ano", "8º Ano", "9º Ano"
+                        ];
+
+                        const ordemMedio = [
+                            "1º Ano M", "2º Ano M", "3º Ano M"
+                        ];
+
+                        function prioridade(turma) {
+                            if (ordemFundamental.includes(turma)) return 1;
+                            if (ordemMedio.includes(turma)) return 2;
+                            return 3;
+                        }
+
+                        function comparar(a, b) {
+                            const turmaA = a.turma.trim();
+                            const turmaB = b.turma.trim();
+                            const pA = prioridade(turmaA);
+                            const pB = prioridade(turmaB);
+
+                            if (pA !== pB) return pA - pB;
+
+                            if (pA === 1) {
+                                return ordemFundamental.indexOf(turmaA) - ordemFundamental.indexOf(turmaB);
+                            } else if (pA === 2) {
+                                return ordemMedio.indexOf(turmaA) - ordemMedio.indexOf(turmaB);
+                            } else {
+                                return turmaA.localeCompare(turmaB);
+                            }
+                        }
+
+                        data.sort(comparar);
+
+                        const xValues = data.map(item => item.turma.trim());
+                        const yValues = data.map(item => item.total);
+
+                        new Chart(document.getElementById("graficoTurmas"), {
+                            type: "bar",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                    label: "Contagens",
+                                    backgroundColor: "#ba3636",
+                                    data: yValues
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                animation: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    title: {
+                                        display: true,
+                                        text: "Contagens por Turma"
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+
+                        console.log(data);
+                    })
+                    .catch(error => {
+                        console.error("Erro ao carregar gráfico:", error);
+                    });
+            });
+        </script>
+
+        <div class="d-flex gap-2 mt-5">
+            <button class="btn btn-danger" onclick="exibirPagina('painel-nutricionista-calendario')">
+                <i class="bi bi-calendar4-week"></i> Calendário das Contagens
+            </button>
+            <button class="btn btn-danger" id="ver-anotacoes" onclick="exibirPagina('painel-nutricionista-anotacoes')">
+                <i class="bi bi-journal-text"></i> Diário de Anotações
+            </button>
+        </div>
     </div>
+
 
     <div id="painel-nutricionista-calendario" class="content">
         <h1 class="home-titulo">Calendário das Contagens</h1>
@@ -250,27 +346,24 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
     </div>
 
     <div id="painel-nutricionista-anotacoes" class="content">
-        <h1 class="home-titulo">Calendário das Anotações</h1>
-        <div id="calendar-container"></div>
+        <h1 class="home-titulo">Diário de Anotações</h1>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="icon-busca">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="busca-anotacao" class="form-control" placeholder="Buscar por título" aria-label="Buscar por título" aria-describedby="icon-busca">
+        </div>
+
+
+        <div id="lista-anotacoes" class="mt-3"></div>
 
         <div class="d-flex gap-2">
-            <button id="ver-contagens" class="btn btn-danger mt-3" disabled>Ver Anotações</button>
+            <button class="voltar-btn btn btn-danger mb-3" id="btnRealizarAnotacao">
+                <i class="bi bi-stickies"></i> Anotar
+            </button>
             <button class="voltar-btn btn btn-danger mb-3" onclick="exibirPagina('painel-nutricionista')">
                 <i class="bi bi-arrow-left"></i> Voltar
             </button>
-        </div>
-
-        <div class="modal fade" id="contagemModal" tabindex="-1" aria-labelledby="contagemModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="contagemModalLabel"><i class="bi bi-card-checklist"></i> Contagens do Dia</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                    </div>
-                    <div class="modal-body" id="resultado-contagens">
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -303,9 +396,9 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
         <div class="container">
             <div class="row g-4 justify-content-center" id="cardsContainerOutros">
             </div>
-            <?php 
-            
-            if($_SESSION['nivel_user368'] == 2){
+            <?php
+
+            if ($_SESSION['nivel_user368'] == 2) {
 
                 echo '
                 <div class="text-center mt-4">
@@ -315,7 +408,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 
                 ';
             }
-            
+
             ?>
         </div>
     </div>
@@ -399,8 +492,8 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 const btnCounterClasses = estiloPersonalizadoOutros ? "btn btn-light text-danger rounded-circle me-2 btn-counter" : "btn btn-outline-danger rounded-circle me-2 btn-counter";
                 const btnConfirmarClasses = estiloPersonalizadoOutros ? "btn btn-light text-danger fw-bold w-100 mt-auto btn-confirmar" : "btn btn-outline-danger w-100 mt-auto btn-confirmar";
 
-                col.innerHTML = 
-                `
+                col.innerHTML =
+                    `
                     <div class="${cardClasses} bg-danger rounded-4 text-center">
                         <div class="card-body d-flex flex-column justify-content-between p-3 text-white">
                             <h5 class="${tituloClasses} fw-bold text-white">${nomeExibicao}</h5>
@@ -449,11 +542,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                 const data = await response.json();
 
-                if (data.error) {
-                    console.error("Erro retornado do servidor (contagens_dia):", data.error, data.message || "");
-                    exibirAlerta('error', 'Erro de Dados', 'Não foi possível carregar os totais das contagens.');
-                    return;
-                }
+
 
                 if (Array.isArray(data)) {
                     data.forEach(item => {
@@ -649,6 +738,64 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 });
             }
 
+            const btnAnotacao = document.getElementById('btnRealizarAnotacao');
+
+            if (btnAnotacao) {
+                btnAnotacao.addEventListener('click', () => {
+                    const hoje = new Date().toISOString().split('T')[0];
+                    Swal.fire({
+                        title: 'Nova Anotação',
+                        html: `
+                <input id="swal-input-titulo" class="swal2-input" placeholder="Título">
+                <input id="swal-input-data" type="date" class="swal2-input" placeholder="Data" value="${hoje}">
+                <textarea id="swal-input-texto" class="swal2-textarea" placeholder="Digite a anotação..."></textarea>
+            `,
+                        confirmButtonText: 'Salvar',
+                        focusConfirm: false,
+                        preConfirm: () => {
+                            const titulo = document.getElementById('swal-input-titulo').value;
+                            const data = document.getElementById('swal-input-data').value;
+                            const texto = document.getElementById('swal-input-texto').value;
+                            const nutricionista_id = 1;
+
+                            if (!titulo || !data || !texto) {
+                                Swal.showValidationMessage(`Preencha todos os campos.`);
+                                return false;
+                            }
+
+                            return {
+                                titulo: titulo,
+                                data: data,
+                                texto: texto,
+                                nutricionista_id: nutricionista_id
+                            };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed && result.value) {
+                            fetch('../backend/endpoints/post_anotacao.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(result.value)
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        exibirAlerta('success', 'Anotação salva com sucesso!', `Título: ${result.value.titulo}`);
+                                        carregarAnotacoes(); // se tiver função para recarregar anotações
+                                    } else {
+                                        exibirAlerta('error', 'Erro ao salvar anotação', data.message || data.error);
+                                    }
+                                })
+                                .catch(error => {
+                                    exibirAlerta('error', 'Erro inesperado', 'Não foi possível salvar a anotação.');
+                                });
+                        }
+                    });
+                });
+            }
+
 
         }
 
@@ -785,6 +932,82 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 }
             }
         }
+
+        function carregarAnotacoes() {
+            fetch('../backend/endpoints/get_anotacoes.php')
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById("lista-anotacoes");
+                    container.innerHTML = "";
+
+                    if (data.error) {
+                        container.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        container.innerHTML = `<div class="alert alert-info">Nenhuma anotação encontrada.</div>`;
+                        return;
+                    }
+
+                    data.forEach(anotacao => {
+                        const card = document.createElement("div");
+                        card.className = "card mb-2";
+                        card.innerHTML = `
+                    <div class="card-body">
+                        <i class="bi bi-pin-angle-fill pin"></i>                        
+                        <h5 class="card-title">${formatarData(anotacao.data)} - ${anotacao.titulo}</h5>
+                        <p class="card-text">${anotacao.texto}</p>
+                    </div>
+                `;
+                        container.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    console.error("Erro ao carregar anotações:", error);
+                });
+        }
+
+        document.getElementById("ver-anotacoes").addEventListener("click", carregarAnotacoes);
+
+        function formatarData(dataBruta) {
+            const data = new Date(dataBruta);
+            return data.toLocaleDateString('pt-BR');
+        }
+
+        document.getElementById("busca-anotacao").addEventListener("input", () => {
+            const termo = document.getElementById("busca-anotacao").value.trim();
+
+            fetch(`../backend/endpoints/get_anotacoes_filtro.php?titulo=${encodeURIComponent(termo)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const container = document.getElementById("lista-anotacoes");
+                    container.innerHTML = "";
+
+                    if (data.error) {
+                        container.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                        return;
+                    }
+
+                    if (data.length === 0) {
+                        container.innerHTML = `<div class="alert alert-info">Nenhuma anotação encontrada.</div>`;
+                        return;
+                    }
+
+                    data.forEach(anotacao => {
+                        const card = document.createElement("div");
+                        card.className = "card mb-2";
+                        card.innerHTML = `
+                    <div class="card-body anotacao-scroll">
+                        <i class="bi bi-pin-angle-fill pin"></i>
+                        <h5 class="card-title">${formatarData(anotacao.data)} - ${anotacao.titulo}</h5>
+                        <p class="card-text">${anotacao.texto}</p>
+                    </div>
+                `;
+                        container.appendChild(card);
+                    });
+                });
+        });
 
         document.addEventListener('DOMContentLoaded', inicializarAplicacao);
     </script>
@@ -931,6 +1154,7 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                 });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 
 </html>

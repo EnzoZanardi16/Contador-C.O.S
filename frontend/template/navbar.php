@@ -18,6 +18,8 @@
               Turma</a></li>
           <li class="nav-item"><a href="../views/cadastrar_contagem.php" class="nav-link"><i class="bi bi-clipboard-check"></i>
               Cadastrar Contagem</a></li>
+          <li class="nav-item"><a href="../../frontend/main.php" class="nav-link"><i class="bi bi-arrow-left"></i>
+              Voltar</a></li>
         </ul>
       </div>
     </div>

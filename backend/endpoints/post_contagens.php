@@ -1,6 +1,7 @@
 <?php
 header("Content-Type: application/json");
 require_once "../config/db.php"; // Conexão centralizada
+session_start();
 date_default_timezone_set('America/Sao_Paulo'); // Fuso horário de Brasília
 
 // Verifica se a requisição é POST
@@ -28,7 +29,7 @@ $hora = date('H:i:s');
 $qtd_contagem = (int) $input["qtd_contagem"];
 $turmas_id_turma = (int) $input["turmas_id_turma"];
 // O usuário que realizou a contagem será fixo (inspetora de id 1)
-$users368_id_user368 = 1;
+$users368_id_user368 = $_SESSION['id_user368'];
 
 $verify = $conn->prepare("SELECT * FROM contagens WHERE turmas_id_turma = :turma AND data_contagem = :data");
 $verify->bindParam(":turma", $turmas_id_turma, PDO::PARAM_INT);

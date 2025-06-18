@@ -481,9 +481,9 @@ body {
     border: 2px solid #c0392b;
     border-radius: 16px;
     padding: 30px;
-    max-width: 800px;
+    max-width: 750px;
     /* Aumentado */
-    margin: 0 auto;
+
     color: #8b0000;
     font-size: 1.2rem;
     /* Aumenta fonte geral */
@@ -514,8 +514,8 @@ body {
 
 /* Células */
 #calendar-container td {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     font-size: 1.2rem;
     padding: 10px;
     text-align: center;
@@ -545,8 +545,8 @@ body {
 }
 
 #ver-contagens {
-    width: 160px;
-    height: 70px;
+    width: 200px;
+    height: 50px !important;
     display: block;
     margin-top: 20px !important;
     font-weight: bold;
@@ -556,8 +556,8 @@ body {
 }
 
 .voltar-btn {
-    width: 160px;
-    height: 70px;
+    width: 200px;
+    height: 50px !important;
     display: block;
     margin-top: 20px !important;
     font-weight: bold;
@@ -615,4 +615,19 @@ body {
 
 .text-muted {
     opacity: 0.5;
+}
+
+.botao{
+    height: 50px !important;
+}
+
+#painel-nutricionista-calendario{
+    height: 740px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#lista-anotacoes{
+    max-height: 400px !important;
+    overflow-y: auto !important;
 }

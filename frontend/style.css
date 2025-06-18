@@ -17,3 +17,9 @@ span {
 .swal2-cancel {
     background-color: #d33 !important;
 }
+
+
+.lista-anotacoes{
+    max-height: 430px;
+    overflow-y: auto;
+}
