@@ -65,9 +65,12 @@ include '../template/navbar.php';
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            fetch("../../backend/endpoints/contagen_dia.php")
+            fetch("../../backend/endpoints/contagens.php")
                 .then(response => response.json())
                 .then(data => {
+
+                    console.log(data);
+
                     let tbody = document.getElementById("contagemBody");
                     tbody.innerHTML = "";
                     let somaTotal = 0;

@@ -228,12 +228,12 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
                     .then(response => response.json())
                     .then(data => {
 
-                        
+
                         if (data.error) {
                             console.error(data.error);
                             return;
                         }
-                        
+
                         const ordemFundamental = [
                             "1º Ano", "2º Ano", "3º Ano", "4º Ano", "5º Ano",
                             "6º Ano", "7º Ano", "8º Ano", "9º Ano"
@@ -309,7 +309,14 @@ function buscarSomaContagemPorCategoriaPHP($conn, $categoria, $data)
             });
         </script>
 
-        <div class="d-flex gap-2 mt-5">
+        <div class="d-flex gap-2 mt-1">
+            
+        <?php
+        $dataAtualFormatadaParaSQL = date('Y-m-d');
+        echo '<a href="../backend/reports/gerar_relatorio.php?data=' . $dataAtualFormatadaParaSQL . '" target="_blank">
+    <button class="btn btn-danger"><i class="bi bi-filetype-pdf"></i> Gerar Relatório de Hoje</button>
+</a>';
+        ?>
             <button class="btn btn-danger" onclick="exibirPagina('painel-nutricionista-calendario')">
                 <i class="bi bi-calendar4-week"></i> Calendário das Contagens
             </button>
